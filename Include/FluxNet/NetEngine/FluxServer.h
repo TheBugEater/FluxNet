@@ -1,6 +1,6 @@
 #pragma once
 #include "NetEngine/FluxNetEngineDefines.h"
-#include "Network/FluxNetUpdater.h"
+#include "Utils/FluxNetUpdater.h"
 #include "FluxNetDefines.h"
 #include <string>
 
@@ -21,10 +21,10 @@ namespace Flux
         Server(ServerConfig const& config);
         virtual ~Server();
 
+        virtual void            Update() override;
+
     public:
         Bool                    Listen();
-
-        virtual void            Update() override;
 
     private:
         Peer*                   m_peers[FLUX_MAX_PEERS];

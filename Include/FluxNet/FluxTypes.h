@@ -24,3 +24,42 @@ using PointerType       = unsigned long long;
 using PlatformSocket        = SOCKET;
 using PlatformSocketAddr    = SOCKADDR_IN;
 #endif
+
+namespace Flux
+{
+    enum class ESocketFamily
+    {
+        IPV4,
+        IPV6
+    };
+
+    struct SocketDescriptor
+    {
+        ESocketFamily           Family;
+        PlatformSocket          Socket;
+    };
+
+    struct SocketAddressDescriptor
+    {
+        ESocketFamily           Family;
+        uint16                  Port;
+        PlatformSocketAddr      Address;
+    };
+
+    enum class EConnectionState
+    {
+        Idle,
+        HandshakeStarted,
+        HandshakeInProgress,
+        Connected,
+        Disconnected
+    };
+
+    struct PacketHeader
+    {
+        uint32          SentTime;
+        uint16          SequenceId;
+        uint8           ChannelId;
+        uint8           Padding;
+    };
+}

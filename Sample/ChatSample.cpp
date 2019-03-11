@@ -19,9 +19,18 @@ int main()
         return -1;
     }
 
+    // Loopback Client
+    ClientConfig clientConfig;
+    clientConfig.Family = Flux::ESocketFamily::IPV4;
+    clientConfig.ServerIP = "127.0.0.1";
+    clientConfig.ServerPort = 3850;
+    Client* pClient = NetEngine::Instance()->CreateClient(clientConfig);
+    pClient->Connect();
+
     while (True)
     {
         NetEngine::Instance()->Update();
+        Sleep(10);
     }
 
     NetEngine::DestroyInstance();

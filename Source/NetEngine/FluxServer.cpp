@@ -1,46 +1,50 @@
 #include "NetEngine/FluxServer.h"
 #include "Network/FluxNetModulePlatform.h"
 
-Flux::Server::Server(ServerConfig const& config)
+namespace Flux
 {
-    m_config = config;
-}
-
-Flux::Server::~Server()
-{
-}
-
-Bool Flux::Server::Listen()
-{
-    m_socket = NetModule::Instance()->CreateSocket(m_config.Family);
-
-    SocketAddressDescriptor addressDescriptor;
-    addressDescriptor.Family = m_config.Family;
-    addressDescriptor.Port = m_config.HostPort;
-
-    if (NetModule::Instance()->CreateNetworkAddress(addressDescriptor, m_config.HostIP.c_str()) == False)
+    Server::Server(ServerConfig const& config)
     {
-        return False;
+        m_config = config;
     }
 
-    if (NetModule::Instance()->SetNonBlocking(m_socket, True) == False)
+    Server::~Server()
     {
-        return False;
     }
 
-    if (NetModule::Instance()->BindSocket(m_socket, addressDescriptor) == False)
+    Bool Server::Listen()
     {
-        return False;
+        m_socket = NetModule::Instance()->CreateSocket(m_config.Family);
+
+        SocketAddressDescriptor addressDescriptor;
+        addressDescriptor.Family = m_config.Family;
+        addressDescriptor.Port = m_config.HostPort;
+
+        if (NetModule::Instance()->CreateNetworkAddress(addressDescriptor, m_config.HostIP.c_str()) == False)
+        {
+            return False;
+        }
+
+        if (NetModule::Instance()->SetNonBlocking(m_socket, True) == False)
+        {
+            return False;
+        }
+
+        if (NetModule::Instance()->BindSocket(m_socket, addressDescriptor) == False)
+        {
+            return False;
+        }
+
+        return True;
     }
 
-    return True;
-}
-
-void Flux::Server::Update()
-{
-    int32 recvSize = NetModule::Instance()->RecvMessage(m_socket, m_recvAddress, m_recvBuffer, FLUX_NET_MTU);
-    if (recvSize > 0)
+    void Server::Update()
     {
-        printf("Message : %s", m_recvBuffer);
+        int32 recvSize = NetModule::Instance()->RecvMessage(m_socket, m_recvAddress, m_recvBuffer, FLUX_NET_MTU);
+        if (recvSize > 0)
+        {
+            uint8* message = m_recvBuffer + sizeof(PacketHeader);
+            printf("Message : %s\n", message);
+        }
     }
 }

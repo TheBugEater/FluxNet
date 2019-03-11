@@ -1,5 +1,7 @@
 #include "NetEngine/FluxNetEngineDefines.h"
-#include "Network/FluxNetUpdater.h"
+#include "Utils/FluxNetUpdater.h"
+#include "FluxNetDefines.h"
+#include <string>
 
 namespace Flux
 {
@@ -7,23 +9,33 @@ namespace Flux
 
     struct ClientConfig
     {
-        uint32      ServerIP;
-        uint16      ServerPort;
+        ESocketFamily   Family;
+        std::string     ServerIP;
+        uint16          ServerPort;
     };
 
     class Client : public NetUpdater
     {
-    public:
+    private:
         Client(ClientConfig const& config);
-
-        void                    Connect();
+        ~Client();
 
         virtual void            Update() override;
 
-    private:
-        EPeerState              ProcessMessages();
+    public:
 
+        Bool                    Connect();
+
+
+    private:
         Peer*                   m_peer;
+        SocketDescriptor        m_socket;
+
+        uint8                   m_recvBuffer[FLUX_NET_MTU];
+        SocketAddressDescriptor m_recvAddress;
+
+        ClientConfig            m_config;
+
         friend class            NetEngine;
     };
 }

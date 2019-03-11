@@ -1,32 +1,6 @@
 #pragma once
 #include "FluxTypes.h"
 
-namespace Flux
-{
-    enum class ESocketFamily
-    {
-        IPV4,
-        IPV6
-    };
-
-    struct SocketDescriptor
-    {
-        ESocketFamily           Family;
-        PlatformSocket          Socket;
-    };
-
-    struct SocketAddressDescriptor
-    {
-        ESocketFamily           Family;
-        uint16                  Port;
-        PlatformSocketAddr      Address;
-    };
-
-    struct PacketHeader
-    {
-    };
-}
-
 #define DEFINE_SINGLETON(Module)                                                                                                \
 public:                                                                                                                         \
 static  void         CreateInstance();                                                                                          \
