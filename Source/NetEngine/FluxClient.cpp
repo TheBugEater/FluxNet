@@ -14,12 +14,12 @@ namespace Flux
 
     Bool Client::Connect()
     {
-        m_socket = NetModule::Instance()->CreateSocket(m_config.Family);
+        m_socket = NetModule::CreateSocket(m_config.Family);
 
         SocketAddressDescriptor addressDescriptor;
         addressDescriptor.Port = m_config.ServerPort;
 
-        if (NetModule::Instance()->CreateNetworkAddress(m_socket, addressDescriptor, m_config.ServerIP.c_str()) == False)
+        if (NetModule::CreateNetworkAddress(m_socket, addressDescriptor, m_config.ServerIP.c_str()) == False)
         {
             return False;
         }
@@ -31,7 +31,7 @@ namespace Flux
         memcpy(buffer, &header, sizeof(PacketHeader));
         memcpy(buffer + sizeof(PacketHeader), "Hello", 5);
 
-        if (NetModule::Instance()->SendMessage(m_socket, addressDescriptor, buffer, sizeof(PacketHeader) + 5) < 0)
+        if (NetModule::SendMessage(m_socket, addressDescriptor, buffer, sizeof(PacketHeader) + 5) < 0)
         {
             return False;
         }

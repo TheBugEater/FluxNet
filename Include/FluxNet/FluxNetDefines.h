@@ -35,23 +35,19 @@ void    Module::DestroyInstance()                                               
 
 #define DEFINE_NET_MODULE(Module)                                                                                               \
 public:                                                                                                                         \
-    Bool                Initialize();                                                                                           \
-    SocketDescriptor    CreateSocket(ESocketFamily family);                                                                     \
-    Bool                BindSocket(SocketDescriptor const& sock, SocketAddressDescriptor const& address);                       \
-    int32               SendMessage(SocketDescriptor const& sock , SocketAddressDescriptor const& address,                      \
-                        const uint8* message, const int32 messageLen);                                                          \
-    int32               RecvMessage(SocketDescriptor const& sock , SocketAddressDescriptor& address,                            \
-                        uint8* message, const int32 messageLen);                                                                \
-    void                CloseSocket(SocketDescriptor const& socket);                                                            \
-    void                Shutdown();                                                                                             \
-    Bool                SetNonBlocking(SocketDescriptor const& sock, Bool enable);                                              \
-    uint16              HostToNetworkShort(uint16 value);                                                                       \
-    uint32              HostToNetworkLong(uint32 value);                                                                        \
-    uint16              NetworkToHostShort(uint16 value);                                                                       \
-    uint32              NetworkToHostLong(uint32 value);                                                                        \
-    Bool                CreateNetworkAddress(SocketDescriptor const& sock,                                                      \
-                        SocketAddressDescriptor& descriptor, const char* src);                                                  \
-    DEFINE_SINGLETON(Module)
-
-#define IMPLEMENT_NET_MODULE(Module)                                                                                            \
-    IMPLEMENT_SINGLETON(Module)
+    static Bool                 Initialize();                                                                                   \
+    static SocketDescriptor     CreateSocket(ESocketFamily family);                                                             \
+    static Bool                 BindSocket(SocketDescriptor const& sock, SocketAddressDescriptor const& address);               \
+    static int32                SendMessage(SocketDescriptor const& sock , SocketAddressDescriptor const& address,              \
+                                const uint8* message, const int32 messageLen);                                                  \
+    static int32                RecvMessage(SocketDescriptor const& sock , SocketAddressDescriptor& address,                    \
+                                uint8* message, const int32 messageLen);                                                        \
+    static void                 CloseSocket(SocketDescriptor const& socket);                                                    \
+    static void                 Shutdown();                                                                                     \
+    static Bool                 SetNonBlocking(SocketDescriptor const& sock, Bool enable);                                      \
+    static uint16               HostToNetworkShort(uint16 value);                                                               \
+    static uint32               HostToNetworkLong(uint32 value);                                                                \
+    static uint16               NetworkToHostShort(uint16 value);                                                               \
+    static uint32               NetworkToHostLong(uint32 value);                                                                \
+    static Bool                 CreateNetworkAddress(SocketDescriptor const& sock,                                              \
+                                SocketAddressDescriptor& descriptor, const char* src);

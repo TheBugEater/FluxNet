@@ -3,15 +3,6 @@
 
 namespace Flux
 {
-    IMPLEMENT_NET_MODULE(NetModuleWindows)
-
-    NetModuleWindows::NetModuleWindows()
-    {
-    }
-    NetModuleWindows::~NetModuleWindows()
-    {
-    }
-
     Bool    NetModuleWindows::Initialize()
     {
         WSADATA wsaData;

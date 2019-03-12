@@ -14,22 +14,22 @@ namespace Flux
 
     Bool Server::Listen()
     {
-        m_socket = NetModule::Instance()->CreateSocket(m_config.Family);
+        m_socket = NetModule::CreateSocket(m_config.Family);
 
         SocketAddressDescriptor addressDescriptor;
         addressDescriptor.Port = m_config.HostPort;
 
-        if (NetModule::Instance()->CreateNetworkAddress(m_socket, addressDescriptor, m_config.HostIP.c_str()) == False)
+        if (NetModule::CreateNetworkAddress(m_socket, addressDescriptor, m_config.HostIP.c_str()) == False)
         {
             return False;
         }
 
-        if (NetModule::Instance()->SetNonBlocking(m_socket, True) == False)
+        if (NetModule::SetNonBlocking(m_socket, True) == False)
         {
             return False;
         }
 
-        if (NetModule::Instance()->BindSocket(m_socket, addressDescriptor) == False)
+        if (NetModule::BindSocket(m_socket, addressDescriptor) == False)
         {
             return False;
         }
@@ -39,7 +39,7 @@ namespace Flux
 
     void Server::Update()
     {
-        int32 recvSize = NetModule::Instance()->RecvMessage(m_socket, m_recvAddress, m_recvBuffer, FLUX_NET_MTU);
+        int32 recvSize = NetModule::RecvMessage(m_socket, m_recvAddress, m_recvBuffer, FLUX_NET_MTU);
         if (recvSize > 0)
         {
             uint8* message = m_recvBuffer + sizeof(PacketHeader);

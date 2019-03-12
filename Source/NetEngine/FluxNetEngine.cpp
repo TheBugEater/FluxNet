@@ -9,12 +9,12 @@ namespace Flux
 
     NetEngine::NetEngine()
     {
-        NetModule::Instance()->Initialize();
+        NetModule::Initialize();
     }
 
     NetEngine::~NetEngine()
     {
-        NetModule::Instance()->Shutdown();
+        NetModule::Shutdown();
     }
 
     Flux::Server* NetEngine::CreateServer(ServerConfig const& serverConfig)
