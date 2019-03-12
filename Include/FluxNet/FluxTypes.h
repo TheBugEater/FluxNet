@@ -30,7 +30,9 @@ namespace Flux
     enum class ESocketFamily
     {
         IPV4,
+#ifdef FLUX_ENABLE_IPV6
         IPV6
+#endif
     };
 
     struct SocketDescriptor
@@ -41,7 +43,15 @@ namespace Flux
 
     struct SocketAddressDescriptor
     {
-        ESocketFamily           Family;
+        union Address
+        {
+            uint32              IPV4Address;
+#ifdef FLUX_ENABLE_IPV6
+            uint16              IPV6Address[8];
+#endif // FLUX_ENABLE_IPV6
+
+        };
+
         uint16                  Port;
         PlatformSocketAddr      Address;
     };

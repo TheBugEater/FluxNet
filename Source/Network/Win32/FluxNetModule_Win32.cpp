@@ -97,9 +97,9 @@ namespace Flux
         return ntohl(value);
     }
 
-    Bool NetModuleWindows::CreateNetworkAddress(SocketAddressDescriptor& descriptor, const char* src)
+    Bool NetModuleWindows::CreateNetworkAddress(SocketDescriptor const& sock, SocketAddressDescriptor& descriptor, const char* src)
     {
-        descriptor.Address.sin_family = (descriptor.Family == ESocketFamily::IPV4) ? AF_INET : AF_INET6;
+        descriptor.Address.sin_family = (sock.Family == ESocketFamily::IPV4) ? AF_INET : AF_INET6;
         descriptor.Address.sin_port = HostToNetworkShort(descriptor.Port);
 
         if (InetPton(descriptor.Address.sin_family, src, &descriptor.Address.sin_addr) != 1)

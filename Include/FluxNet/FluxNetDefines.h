@@ -49,7 +49,8 @@ public:                                                                         
     uint32              HostToNetworkLong(uint32 value);                                                                        \
     uint16              NetworkToHostShort(uint16 value);                                                                       \
     uint32              NetworkToHostLong(uint32 value);                                                                        \
-    Bool                CreateNetworkAddress(SocketAddressDescriptor& descriptor, const char* src);                             \
+    Bool                CreateNetworkAddress(SocketDescriptor const& sock,                                                      \
+                        SocketAddressDescriptor& descriptor, const char* src);                                                  \
     DEFINE_SINGLETON(Module)
 
 #define IMPLEMENT_NET_MODULE(Module)                                                                                            \

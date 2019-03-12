@@ -17,10 +17,9 @@ namespace Flux
         m_socket = NetModule::Instance()->CreateSocket(m_config.Family);
 
         SocketAddressDescriptor addressDescriptor;
-        addressDescriptor.Family = m_config.Family;
         addressDescriptor.Port = m_config.ServerPort;
 
-        if (NetModule::Instance()->CreateNetworkAddress(addressDescriptor, m_config.ServerIP.c_str()) == False)
+        if (NetModule::Instance()->CreateNetworkAddress(m_socket, addressDescriptor, m_config.ServerIP.c_str()) == False)
         {
             return False;
         }
