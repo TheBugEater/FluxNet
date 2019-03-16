@@ -1,4 +1,6 @@
 #include "NetEngine/FluxNetEngine.h"
+#include "Serializer/Streams/FluxBinaryStream.h"
+#include "Serializer/FluxSerializer.h"
 
 #define HOST_IP     "0.0.0.0"
 #define HOST_PORT   3850
@@ -26,6 +28,17 @@ int main()
     clientConfig.ServerPort = 3850;
     Client* pClient = NetEngine::Instance()->CreateClient(clientConfig);
     pClient->Connect();
+
+    Test test;
+    test.number = 121223;
+    test.value = 5343;
+    Flux::BinaryStream stream;
+    test.Serialize(&stream);
+
+    stream.Reset();
+
+    Test test1;
+    test1.Deserialize(&stream);
 
     while (True)
     {
