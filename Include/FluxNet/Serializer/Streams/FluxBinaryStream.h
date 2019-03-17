@@ -19,7 +19,6 @@ namespace Flux
         virtual void Write(const char* name, int16 value)           override;
         virtual void Write(const char* name, int32 value)           override;
         virtual void Write(const char* name, int64 value)           override;
-        virtual void Write(const char* name, ISerializable* value)  override;
 
         virtual void Read(const char* name, uint8& value)           override;
         virtual void Read(const char* name, uint16& value)          override;
@@ -29,7 +28,6 @@ namespace Flux
         virtual void Read(const char* name, int16& value)           override;
         virtual void Read(const char* name, int32& value)           override;
         virtual void Read(const char* name, int64& value)           override;
-        virtual void Read(const char* name, ISerializable* value)   override;
 
         void Reset() { m_size = 0;  }
     private:

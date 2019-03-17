@@ -18,7 +18,11 @@ namespace Flux
         virtual void    Write(const char* name, int16 value)            = 0;
         virtual void    Write(const char* name, int32 value)            = 0;
         virtual void    Write(const char* name, int64 value)            = 0;
-        virtual void    Write(const char* name, ISerializable* value)   = 0;
+        template<typename T>
+        void    Write(const char* name, T* value)
+        {
+            value->Serialize(this);
+        }
 
         virtual void    Read(const char* name, uint8& value)            = 0;
         virtual void    Read(const char* name, uint16& value)           = 0;
@@ -28,6 +32,11 @@ namespace Flux
         virtual void    Read(const char* name, int16& value)            = 0;
         virtual void    Read(const char* name, int32& value)            = 0;
         virtual void    Read(const char* name, int64& value)            = 0;
-        virtual void    Read(const char* name, ISerializable* value)    = 0;
+        template<typename T>
+        void    Read(const char* name, T* value)
+        {
+            value->Deserialize(this);
+        }
+
     };
 }

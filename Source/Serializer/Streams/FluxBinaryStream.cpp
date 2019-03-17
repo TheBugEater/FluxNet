@@ -56,11 +56,6 @@ namespace Flux
         CopyToBuffer(&value, sizeof(int64));
     }
 
-    void BinaryStream::Write(const char* name, ISerializable* value)
-    {
-        CopyToBuffer(&value, sizeof(uint8));
-    }
-
     void BinaryStream::Read(const char* name, uint8& value)
     {
         ReadFromBuffer(&value, sizeof(uint8));
@@ -99,11 +94,6 @@ namespace Flux
     void BinaryStream::Read(const char* name, int64& value)
     {
         ReadFromBuffer(&value, sizeof(int64));
-    }
-
-    void BinaryStream::Read(const char* name, ISerializable* value)
-    {
-        value->Deserialize(this);
     }
 
     void BinaryStream::CopyToBuffer(void* value, uint32 length)
