@@ -1,8 +1,6 @@
 #include "NetEngine/FluxNetEngine.h"
 #include "Serializer/Streams/FluxBinaryStream.h"
-#include "Serializer/FluxSerializer.h"
-#include "Serializer/FluxSerializableClass.h"
-#include "Serializer/FluxSerializable.h"
+#include "Serializer/FluxReflection.h"
 
 #define HOST_IP     "0.0.0.0"
 #define HOST_PORT   3850
@@ -37,10 +35,10 @@ FLUX_PROPERTY(&Testo2::test2Value1)
 FLUX_PROPERTY(&Testo2::test2Value2)
 FLUX_CLASS_END(Testo2)
 
-
-
 int main()
 {
+    ClassFactory::Instance()->RegisterClass<Testo2>();
+
     ServerConfig config;
     config.Family = Flux::ESocketFamily::IPV4;
     config.HostIP = HOST_IP;
@@ -71,7 +69,6 @@ int main()
 
     stream.Reset();
     test2.Deserialize(&stream);
-
 
     while (True)
     {

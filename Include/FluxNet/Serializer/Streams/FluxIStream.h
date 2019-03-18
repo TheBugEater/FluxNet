@@ -38,5 +38,6 @@ namespace Flux
             value->Deserialize(this);
         }
 
+        virtual void GetBuffer(uint8** buffer, uint32& length)          = 0;
     };
 }

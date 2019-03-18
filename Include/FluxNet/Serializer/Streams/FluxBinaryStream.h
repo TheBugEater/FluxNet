@@ -30,6 +30,9 @@ namespace Flux
         virtual void Read(const char* name, int64& value)           override;
 
         void Reset() { m_size = 0;  }
+
+        virtual void GetBuffer(uint8** buffer, uint32& length)      override;
+
     private:
         void            CopyToBuffer(void* value, uint32 length);
         void            ReadFromBuffer(void* value, uint32 length);
