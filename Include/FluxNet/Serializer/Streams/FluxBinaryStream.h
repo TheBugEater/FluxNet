@@ -31,7 +31,10 @@ namespace Flux
 
         void Reset() { m_size = 0;  }
 
-        virtual void GetBuffer(uint8** buffer, uint32& length)      override;
+        virtual uint32  GetBuffer(uint8* buffer, uint32 bufferSize) override;
+
+        virtual Bool    IsEmpty() const                             override;
+        virtual uint32  GetSize() const                             override;
 
     private:
         void            CopyToBuffer(void* value, uint32 length);

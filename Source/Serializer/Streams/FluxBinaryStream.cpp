@@ -96,10 +96,25 @@ namespace Flux
         ReadFromBuffer(&value, sizeof(int64));
     }
 
-    void BinaryStream::GetBuffer(uint8** buffer, uint32& length)
+    uint32 BinaryStream::GetBuffer(uint8* buffer, uint32 bufferSize)
     {
-        *buffer = m_buffer;
-        length = m_size;
+        if (bufferSize < m_size)
+        {
+            return 0;
+        }
+
+        memcpy(buffer, m_buffer, m_size);
+        return m_size;
+    }
+
+    Bool BinaryStream::IsEmpty() const
+    {
+        return (Bool)(m_size == 0);
+    }
+
+    uint32 BinaryStream::GetSize() const
+    {
+        return m_size;
     }
 
     void BinaryStream::CopyToBuffer(void* value, uint32 length)

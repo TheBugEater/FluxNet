@@ -22,6 +22,8 @@ namespace Flux
         virtual ~Server();
 
         virtual void            Update() override;
+        void                    FlushSend();
+        Peer*                   FindPeerByAddress(SocketAddressDescriptor const& descriptor);
 
     public:
         Bool                    Listen();
@@ -34,6 +36,10 @@ namespace Flux
         SocketAddressDescriptor m_recvAddress;
 
         ServerConfig            m_config;
+
+#ifdef _DEBUG
+        class TestMessage*      m_testPacket;
+#endif
 
         friend class            NetEngine;
     };

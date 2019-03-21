@@ -52,6 +52,16 @@ namespace Flux
 
         };
 
+        Bool Compare(SocketAddressDescriptor const& descriptor) const
+        {
+            if (descriptor.Port == Port && descriptor.Address.sin_addr.s_addr == descriptor.Address.sin_addr.s_addr)
+            {
+                return True;
+            }
+
+            return False;
+        }
+
         uint16                  Port;
         PlatformSocketAddr      Address;
     };

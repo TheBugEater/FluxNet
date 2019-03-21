@@ -1,8 +1,12 @@
 #pragma once
 #include "FluxTypes.h"
+#include <queue>
 
 namespace Flux
 {
+    class ISerializable;
+    class Message;
+
     enum class EChannelType
     {
         Reliable_Ordered,
@@ -12,15 +16,18 @@ namespace Flux
     class Channel
     {
     public:
-        Channel(EChannelType type)
-            : m_channelType(type)
-        {
-        }
+        Channel(EChannelType type);
+
+        void                    Send(ISerializable* object);
+
+        Message*                PopSendQueue();
 
     private:
-        EChannelType    m_channelType;
+        EChannelType            m_channelType;
 
-        uint16          m_sendSequence;
-        uint16          m_recvSequence;
+        uint16                  m_sendSequence;
+        uint16                  m_recvSequence;
+
+        std::queue<Message*>    m_sendQueue;
     };
 }

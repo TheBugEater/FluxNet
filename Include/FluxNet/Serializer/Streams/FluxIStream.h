@@ -23,6 +23,11 @@ namespace Flux
         {
             value.Serialize(this);
         }
+        template<typename T>
+        void    Write(const char* name, T* value)
+        {
+            value->Serialize(this);
+        }
 
         virtual void    Read(const char* name, uint8& value)            = 0;
         virtual void    Read(const char* name, uint16& value)           = 0;
@@ -37,7 +42,14 @@ namespace Flux
         {
             value.Deserialize(this);
         }
+        template<typename T>
+        void    Read(const char* name, T* value)
+        {
+            value->Deserialize(this);
+        }
 
-        virtual void GetBuffer(uint8** buffer, uint32& length)          = 0;
+        virtual uint32  GetSize() const                                  = 0;
+        virtual Bool    IsEmpty() const                                  = 0;
+        virtual uint32  GetBuffer(uint8* buffer, uint32 bufferSize)      = 0;
     };
 }

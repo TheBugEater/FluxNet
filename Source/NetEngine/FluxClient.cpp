@@ -1,5 +1,9 @@
 #include "NetEngine/FluxClient.h"
+#include "NetEngine/FluxPeer.h"
 #include "Network/FluxNetModulePlatform.h"
+#include "Utils/FluxNetAllocator.h"
+#include "NetEngine/FluxNetMessages.h"
+#include "Serializer/Streams/FluxBinaryStream.h"
 
 namespace Flux
 {
@@ -24,22 +28,31 @@ namespace Flux
             return False;
         }
 
-        /*uint8   buffer[FLUX_NET_MTU];
-        PacketHeader header;
-        header.ChannelId = 0;
-        header.SequenceId = 1;
-        memcpy(buffer, &header, sizeof(PacketHeader));
-        memcpy(buffer + sizeof(PacketHeader), "Hello", 5);
-
-        if (NetModule::SendMessage(m_socket, addressDescriptor, buffer, sizeof(PacketHeader) + 5) < 0)
-        {
-            return False;
-        }*/
-
+        m_peer = FluxNew Peer(addressDescriptor);
+        
+        // Connection Message
+        ConnectMessage message;
+        message.m_magicNumber = 0xDF3B2ECF;
+        m_peer->Send(&message);
+        
         return True;
     }
 
     void Client::Update()
     {
+        FlushSend();
+    }
+
+    void Client::FlushSend()
+    {
+        uint8 buffer[FLUX_NET_MTU];
+        BinaryStream binaryStream;
+
+        m_peer->SerializePacket(&binaryStream);
+        if (!binaryStream.IsEmpty())
+        {
+            uint32 length = binaryStream.GetBuffer(buffer, FLUX_NET_MTU);
+            NetModule::SendMessage(m_socket, m_peer->GetAddressDescriptor(), buffer, length);
+        }
     }
 }

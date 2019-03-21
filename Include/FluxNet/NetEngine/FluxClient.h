@@ -21,7 +21,7 @@ namespace Flux
         ~Client();
 
         virtual void            Update() override;
-
+        void                    FlushSend();
     public:
 
         Bool                    Connect();
