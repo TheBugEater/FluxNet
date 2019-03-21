@@ -13,7 +13,3 @@ enum class EPeerState
     Disconnecting,
     Disconnected
 };
-
-namespace Flux
-{
-}

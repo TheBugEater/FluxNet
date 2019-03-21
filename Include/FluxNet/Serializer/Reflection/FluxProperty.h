@@ -1,5 +1,6 @@
 #pragma once
 #include "FluxTypes.h"
+#include "Serializer/Streams/FluxIStream.h"
 
 namespace Flux
 {

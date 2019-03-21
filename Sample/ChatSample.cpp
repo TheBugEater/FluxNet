@@ -26,19 +26,17 @@ public:
 };
 
 FLUX_BEGIN_CLASS_ROOT(Testo)
-FLUX_PROPERTY(&Testo::value)
-FLUX_PROPERTY(&Testo::valueShort)
-FLUX_CLASS_END(Testo)
+    FLUX_PROPERTY(value)
+    FLUX_PROPERTY(valueShort)
+FLUX_END_CLASS(Testo)
 
 FLUX_BEGIN_CLASS(Testo2, Testo)
-FLUX_PROPERTY(&Testo2::test2Value1)
-FLUX_PROPERTY(&Testo2::test2Value2)
-FLUX_CLASS_END(Testo2)
+    FLUX_PROPERTY(test2Value1)
+    FLUX_PROPERTY(test2Value2)
+FLUX_END_CLASS(Testo2)
 
 int main()
 {
-    ClassFactory::Instance()->RegisterClass<Testo2>();
-
     ServerConfig config;
     config.Family = Flux::ESocketFamily::IPV4;
     config.HostIP = HOST_IP;

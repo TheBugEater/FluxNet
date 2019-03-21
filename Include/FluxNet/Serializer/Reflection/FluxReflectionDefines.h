@@ -1,8 +1,10 @@
 #pragma once
 #include "FluxTypes.h"
+#include "Serializer/Reflection/FluxClassFactory.h"
 
 #define FLUX_CLASS(CLASS)                                                                               \
 public:                                                                                                 \
+friend class CLASS##Class;                                                                              \
 static Flux::ClassBase* StaticClass;                                                                    \
 static const char*      GetClassName() { return #CLASS; }                                               \
 virtual class Flux::ClassBase* GetClass() const { return CLASS::StaticClass; }                          \
@@ -19,18 +21,20 @@ void    Deserialize(Flux::IStream* stream);
 class CLASS##Class : public Flux::ClassBase                                                             \
 {                                                                                                       \
 public:                                                                                                 \
+    using ClassType = CLASS;                                                                            \
     CLASS##Class()                                                                                      \
         : ClassBase(Base)                                                                               \
     {                                                                                                   \
         RegisterClass();                                                                                \
+        ClassFactory::Instance()->RegisterClass<ClassType>();                                           \
     }                                                                                                   \
     void    RegisterClass()                                                                             \
     {
 
 #define FLUX_PROPERTY(Member)                                                                           \
-        AddProperty(Member);
+        AddProperty(&ClassType::Member);
 
-#define FLUX_CLASS_END(CLASS)                                                                           \
+#define FLUX_END_CLASS(CLASS)                                                                           \
     }                                                                                                   \
 };                                                                                                      \
 CLASS##Class        Global##CLASS##Object;                                                              \
