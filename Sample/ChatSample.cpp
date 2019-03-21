@@ -16,13 +16,14 @@ public:
     uint16  valueShort;
 };
 
-class Testo2 : public Testo
+class Testo2 : public Flux::ISerializable
 {
 public:
     FLUX_CLASS(Testo2)
 
     uint32  test2Value1;
     uint32  test2Value2;
+    Testo   testo;
 };
 
 FLUX_BEGIN_CLASS_ROOT(Testo)
@@ -30,9 +31,10 @@ FLUX_BEGIN_CLASS_ROOT(Testo)
     FLUX_PROPERTY(valueShort)
 FLUX_END_CLASS(Testo)
 
-FLUX_BEGIN_CLASS(Testo2, Testo)
+FLUX_BEGIN_CLASS_ROOT(Testo2)
     FLUX_PROPERTY(test2Value1)
     FLUX_PROPERTY(test2Value2)
+    FLUX_PROPERTY(testo)
 FLUX_END_CLASS(Testo2)
 
 int main()
@@ -58,8 +60,8 @@ int main()
     pClient->Connect();
 
     Testo2 test, test2;
-    test.value = 2323;
-    test.valueShort = 97;
+    test.testo.value = 2323;
+    test.testo.valueShort = 97;
     test.test2Value1 = 645;
     test.test2Value2 = 353;
     Flux::BinaryStream stream;

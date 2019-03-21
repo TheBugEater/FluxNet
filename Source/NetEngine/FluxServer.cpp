@@ -39,11 +39,11 @@ namespace Flux
 
     void Server::Update()
     {
-        int32 recvSize = NetModule::RecvMessage(m_socket, m_recvAddress, m_recvBuffer, FLUX_NET_MTU);
+        /*int32 recvSize = NetModule::RecvMessage(m_socket, m_recvAddress, m_recvBuffer, FLUX_NET_MTU);
         if (recvSize > 0)
         {
             uint8* message = m_recvBuffer + sizeof(PacketHeader);
             printf("Message : %s\n", message);
-        }
+        }*/
     }
 }

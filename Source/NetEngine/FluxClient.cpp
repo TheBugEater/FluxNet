@@ -24,7 +24,7 @@ namespace Flux
             return False;
         }
 
-        uint8   buffer[FLUX_NET_MTU];
+        /*uint8   buffer[FLUX_NET_MTU];
         PacketHeader header;
         header.ChannelId = 0;
         header.SequenceId = 1;
@@ -34,7 +34,7 @@ namespace Flux
         if (NetModule::SendMessage(m_socket, addressDescriptor, buffer, sizeof(PacketHeader) + 5) < 0)
         {
             return False;
-        }
+        }*/
 
         return True;
     }

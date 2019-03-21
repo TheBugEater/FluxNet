@@ -64,12 +64,4 @@ namespace Flux
         Connected,
         Disconnected
     };
-
-    struct PacketHeader
-    {
-        uint32          SentTime;
-        uint16          SequenceId;
-        uint8           ChannelId;
-        uint8           Padding;
-    };
 }
