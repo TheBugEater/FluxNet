@@ -11,8 +11,6 @@ namespace Flux
     {
         m_config = config;
 
-        memset(m_peers, 0, sizeof(m_peers));
-
         m_testPacket = new TestMessage();
         m_testPacket->m_value = 103434;
     }
@@ -54,12 +52,12 @@ namespace Flux
             Peer* peer = FindPeerByAddress(m_recvAddress);
             if (!peer)
             {
-                m_peers[0] = FluxNew Peer(m_recvAddress);
-                peer = m_peers[0];
+                peer = FluxNew Peer(m_recvAddress);
+                m_peers.push_back(peer);
             }
 
             // Test Packet
-            m_peers[0]->Send(m_testPacket);
+            peer->Send(m_testPacket);
         }
         FlushSend();
     }
@@ -69,30 +67,31 @@ namespace Flux
         uint8 buffer[FLUX_NET_MTU];
         BinaryStream binarStream;
 
-        for (uint32 i = 0; i < FLUX_MAX_PEERS; i++)
+        for (auto peer : m_peers)
         {
-            if (m_peers[i] == nullptr)
+            if (peer == nullptr)
             {
                 continue;
             }
 
-            m_peers[i]->SerializePacket(&binarStream);
+            peer->SerializePacket(&binarStream);
 
             if (!binarStream.IsEmpty())
             {
                 uint32 length = binarStream.GetBuffer(buffer, FLUX_NET_MTU);
-                NetModule::SendMessage(m_socket, m_peers[i]->GetAddressDescriptor(), buffer, length);
+                NetModule::SendMessage(m_socket, peer->GetAddressDescriptor(), buffer, length);
             }
         }
     }
 
     Peer* Server::FindPeerByAddress(SocketAddressDescriptor const& descriptor)
     {
-        for (uint32 i = 0; i < FLUX_MAX_PEERS; i++)
+        // Later replace with a Hash Map
+        for (auto peer : m_peers)
         {
-            if (m_peers[i] && m_peers[i]->GetAddressDescriptor().Compare(descriptor))
+            if (peer && peer->GetAddressDescriptor().Compare(descriptor))
             {
-                return m_peers[i];
+                return peer;
             }
         }
 

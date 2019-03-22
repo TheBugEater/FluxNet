@@ -7,6 +7,7 @@ namespace Flux
     class StaticQueue
     {
     public:
+
     private:
         T           m_queue[capacity];
     };

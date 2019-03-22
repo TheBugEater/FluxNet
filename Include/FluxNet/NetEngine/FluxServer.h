@@ -3,6 +3,7 @@
 #include "Utils/FluxNetUpdater.h"
 #include "FluxNetDefines.h"
 #include <string>
+#include <vector>
 
 namespace Flux
 {
@@ -29,7 +30,7 @@ namespace Flux
         Bool                    Listen();
 
     private:
-        Peer*                   m_peers[FLUX_MAX_PEERS];
+        std::vector<Peer*>      m_peers;
         SocketDescriptor        m_socket;
 
         uint8                   m_recvBuffer[FLUX_NET_MTU];
