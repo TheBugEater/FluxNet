@@ -11,7 +11,7 @@ namespace Flux
     {
         m_config = config;
 
-        m_testPacket = new TestMessage();
+        m_testPacket = FluxNew TestMessage();
         m_testPacket->m_value = 103434;
     }
 
@@ -58,7 +58,7 @@ namespace Flux
 
             BinaryStream stream;
             stream.LoadFromBuffer((uint8*)m_recvBuffer, recvSize);
-            auto message = ClassFactory::Instance()->CreateClass(&stream);
+            auto message = ClassFactory::Instance()->GenerateClassHierachy(&stream);
             if (message)
             {
             }

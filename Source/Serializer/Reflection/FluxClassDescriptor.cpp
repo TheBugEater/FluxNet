@@ -1,4 +1,4 @@
-#include "Serializer/Reflection/FluxClass.h"
+#include "Serializer/Reflection/FluxClassDescriptor.h"
 
 namespace Flux
 {
@@ -15,6 +15,7 @@ namespace Flux
             m_superClass->Serialize(stream, object);
         }
 
+        stream->Write(GetClassName(), GetClassID());
         for (auto property : m_properties)
         {
             property->Serialize(stream, object);
@@ -28,6 +29,8 @@ namespace Flux
             m_superClass->Deserialize(stream, object);
         }
 
+        uint32 ReadValue = 0;
+        stream->Read(GetClassName(), ReadValue);
         for (auto property : m_properties)
         {
             property->Deserialize(stream, object);

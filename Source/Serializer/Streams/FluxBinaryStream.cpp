@@ -138,6 +138,17 @@ namespace Flux
         return True;
     }
 
+    Bool BinaryStream::ReadStealthy(void* buffer, uint32 size)
+    {
+        if (m_size < m_index + size)
+        {
+            return False;
+        }
+
+        memcpy(buffer, m_buffer + m_index, size);
+        return True;
+    }
+
     void BinaryStream::CopyToBuffer(void* value, uint32 length)
     {
         m_size += length;

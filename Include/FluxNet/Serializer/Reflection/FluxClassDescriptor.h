@@ -14,11 +14,14 @@ namespace Flux
         virtual ~ClassDescriptor() {}
 
         virtual ISerializable*      CreateInstance() = 0;
+        virtual const char*         GetClassName() const = 0;
+        virtual uint32              GetClassID() const = 0;
+        virtual uint32              GetClassSize() const = 0;
 
         template<typename TProperty, typename TClass>
         void AddProperty(TProperty TClass::*member)
         {
-            auto valueProperty = new Property<TProperty, TClass>(member);
+            auto valueProperty = FluxNew Property<TProperty, TClass>(member);
             m_properties.push_back(valueProperty);
         }
 

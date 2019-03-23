@@ -60,7 +60,7 @@ int main()
     ClientConfig clientConfig;
     clientConfig.Family = Flux::ESocketFamily::IPV4;
     clientConfig.ServerIP = "127.0.0.1";
-    clientConfig.ServerPort = 3850;
+    clientConfig.ServerPort = HOST_PORT;
     Client* pClient = NetEngine::Instance()->CreateClient(clientConfig);
     pClient->Connect();
 
@@ -73,7 +73,7 @@ int main()
     test.Serialize(&stream);
 
     stream.Reset();
-    ISerializable* value = ClassFactory::Instance()->CreateClass(&stream);
+    ISerializable* value = ClassFactory::Instance()->GenerateClassHierachy(&stream);
 
     while (True)
     {

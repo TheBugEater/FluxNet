@@ -48,7 +48,8 @@ namespace Flux
             value->Deserialize(this);
         }
 
-
+        // Read without changing the index. 
+        virtual Bool    ReadStealthy(void* buffer, uint32 size)          = 0;
         virtual Bool    LoadFromBuffer(const uint8* buffer, uint32 size) = 0;
         virtual void    Reset()                                          = 0;
         virtual uint32  GetSize() const                                  = 0;

@@ -6,6 +6,7 @@ namespace Flux
         FLUX_PROPERTY(m_sequence)
         FLUX_PROPERTY(m_channel)
         FLUX_PROPERTY(m_bufferLength)
+        FLUX_PROPERTY(m_serializable)
     FLUX_END_CLASS(Message)
 
     FLUX_BEGIN_CLASS_ROOT(PacketHeader)

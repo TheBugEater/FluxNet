@@ -11,6 +11,7 @@ static Flux::ClassDescriptor* StaticClass;                                      
 static constexpr uint32 ClassID = Flux::CRC32(#CLASS);                                                  \
 static const char*      GetClassName() { return #CLASS; }                                               \
 virtual class Flux::ClassDescriptor* GetClass() const { return CLASS::StaticClass; }                    \
+virtual class Flux::ISerializable* Clone() override;                                                    \
 void    Serialize(Flux::IStream* stream);                                                               \
 void    Deserialize(Flux::IStream* stream);
 
@@ -25,7 +26,10 @@ class CLASS##Class : public Flux::ClassDescriptor                               
 {                                                                                                       \
 public:                                                                                                 \
     using ClassType = CLASS;                                                                            \
-    ISerializable* CreateInstance()                                                                     \
+    virtual const char*    GetClassName() const override { return #CLASS; }                             \
+    virtual uint32         GetClassID() const  override { return CLASS::ClassID; }                      \
+    virtual uint32         GetClassSize() const  override { return sizeof(CLASS); }                     \
+    virtual ISerializable* CreateInstance() override                                                    \
     {                                                                                                   \
         return FluxNew ClassType;                                                                       \
     }                                                                                                   \
@@ -46,15 +50,17 @@ public:                                                                         
 };                                                                                                      \
 CLASS##Class        Global##CLASS##Object;                                                              \
 Flux::ClassDescriptor*    CLASS::StaticClass = &Global##CLASS##Object;                                  \
+ISerializable* CLASS::Clone()                                                                           \
+{                                                                                                       \
+    auto object = FluxNew CLASS;                                                                        \
+    memcpy(object, this, sizeof(CLASS));                                                                \
+    return object;                                                                                      \
+}                                                                                                       \
 void CLASS::Serialize(Flux::IStream* stream)                                                            \
 {                                                                                                       \
-    stream->Write(#CLASS, CLASS::ClassID);                                                              \
     StaticClass->Serialize(stream, this);                                                               \
 }                                                                                                       \
 void CLASS::Deserialize(Flux::IStream* stream)                                                          \
 {                                                                                                       \
-    uint32 classId = 0;                                                                                 \
-    stream->Read(#CLASS, classId);                                                                      \
-    assert(classId == CLASS::ClassID);                                                                  \
     StaticClass->Deserialize(stream, this);                                                             \
 }

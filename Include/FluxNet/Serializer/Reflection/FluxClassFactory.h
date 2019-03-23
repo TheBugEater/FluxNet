@@ -1,7 +1,6 @@
 #pragma once
 #include <unordered_map>
 #include "FluxTypes.h"
-#include <assert.h>
 
 // Replace key with CRC32 later
 namespace Flux
@@ -26,7 +25,8 @@ namespace Flux
             m_classes[TClass::ClassID] = TClass::StaticClass;
         }
 
-        ISerializable*  CreateClass(IStream* stream);
+        ISerializable*  GenerateClassHierachy(IStream* stream);
+        ISerializable*  CreateClass(uint32 ClassID);
 
     private:
         static ClassFactory*    ms_instance;

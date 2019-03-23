@@ -1,5 +1,6 @@
 #pragma once
 #include "FluxTypes.h"
+#include "Utils/FluxNetAllocator.h"
 
 #define DEFINE_SINGLETON(Module)                                                                                                \
 public:                                                                                                                         \
@@ -17,7 +18,7 @@ void    Module::CreateInstance()                                                
 {                                                                                                                               \
     if(!ms_instance)                                                                                                            \
     {                                                                                                                           \
-        ms_instance = new Module();                                                                                             \
+        ms_instance = FluxNew Module();                                                                                         \
     }                                                                                                                           \
 }                                                                                                                               \
 Module* Module::Instance()                                                                                                      \

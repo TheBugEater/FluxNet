@@ -10,6 +10,7 @@ namespace Flux
     public:
         uint8*          m_buffer;
         uint32          m_bufferLength;
+        ISerializable*  m_serializable;
 
         uint16          m_sequence;
         uint8           m_channel;

@@ -37,7 +37,9 @@ namespace Flux
         virtual uint32  GetSize() const                             override;
 
 
-        virtual Bool LoadFromBuffer(const uint8* buffer, uint32 size) override;
+        virtual Bool    LoadFromBuffer(const uint8* buffer, uint32 size) override;
+
+        virtual Bool    ReadStealthy(void* buffer, uint32 size)     override;
 
     private:
         void            CopyToBuffer(void* value, uint32 length);

@@ -1,6 +1,7 @@
 #pragma once
 #include "FluxTypes.h"
 #include "Serializer/Streams/FluxIStream.h"
+#include "Serializer/Reflection/FluxClassFactory.h"
 
 namespace Flux
 {
@@ -19,6 +20,38 @@ namespace Flux
         virtual ~IPropertyBase() {}
         virtual void    Serialize(IStream* stream, ISerializable* object) = 0;
         virtual void    Deserialize(IStream* stream, ISerializable* object) = 0;
+    };
+
+    template<typename T>
+    class PropertyAllocator
+    {
+    public:
+        static T Allocate(const char* name, IStream* stream)
+        {
+            return T();
+        }
+    };
+    
+    template<typename T>
+    class PropertyAllocator<T*>
+    {
+    public:
+        static T* Allocate(const char* name, IStream* stream)
+        {
+            return FluxNew T;
+        }
+    };
+
+    template<>
+    class PropertyAllocator<ISerializable*>
+    {
+    public:
+        static ISerializable* Allocate(const char* name, IStream* stream)
+        {
+            uint32 classId = 0;
+            stream->ReadStealthy(&classId, sizeof(uint32));
+            return ClassFactory::Instance()->CreateClass(classId);
+        }
     };
 
     template<typename TProperty, typename TClass>
@@ -40,6 +73,7 @@ namespace Flux
         virtual void    Deserialize(IStream* stream, ISerializable* object)
         {
             PropertyType* value = (PropertyType*)((PointerType)object + m_offset);
+            *value = PropertyAllocator<PropertyType>::Allocate("", stream);
             stream->Read("", *value);
         }
 
