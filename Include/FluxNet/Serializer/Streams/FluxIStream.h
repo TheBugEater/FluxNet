@@ -48,6 +48,9 @@ namespace Flux
             value->Deserialize(this);
         }
 
+
+        virtual Bool    LoadFromBuffer(const uint8* buffer, uint32 size) = 0;
+        virtual void    Reset()                                          = 0;
         virtual uint32  GetSize() const                                  = 0;
         virtual Bool    IsEmpty() const                                  = 0;
         virtual uint32  GetBuffer(uint8* buffer, uint32 bufferSize)      = 0;

@@ -2,6 +2,7 @@
 #include "Serializer/Streams/FluxBinaryStream.h"
 #include "Serializer/FluxReflection.h"
 #include "Utils/FluxHash.h"
+#include "Serializer/Reflection/FluxClassFactory.h"
 
 #define HOST_IP     "0.0.0.0"
 #define HOST_PORT   3850
@@ -72,7 +73,7 @@ int main()
     test.Serialize(&stream);
 
     stream.Reset();
-    test2.Deserialize(&stream);
+    ISerializable* value = ClassFactory::Instance()->CreateClass(&stream);
 
     while (True)
     {

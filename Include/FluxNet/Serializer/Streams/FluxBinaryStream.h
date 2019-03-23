@@ -29,12 +29,15 @@ namespace Flux
         virtual void Read(const char* name, int32& value)           override;
         virtual void Read(const char* name, int64& value)           override;
 
-        void Reset() { m_size = 0;  }
+        virtual void Reset()                                        override;
 
         virtual uint32  GetBuffer(uint8* buffer, uint32 bufferSize) override;
 
         virtual Bool    IsEmpty() const                             override;
         virtual uint32  GetSize() const                             override;
+
+
+        virtual Bool LoadFromBuffer(const uint8* buffer, uint32 size) override;
 
     private:
         void            CopyToBuffer(void* value, uint32 length);
@@ -42,6 +45,7 @@ namespace Flux
 
         uint32          m_capacity;
         uint32          m_size;
+        uint32          m_index;
         uint8*          m_buffer;
     };
 }

@@ -56,6 +56,13 @@ namespace Flux
                 m_peers.push_back(peer);
             }
 
+            BinaryStream stream;
+            stream.LoadFromBuffer((uint8*)m_recvBuffer, recvSize);
+            auto message = ClassFactory::Instance()->CreateClass(&stream);
+            if (message)
+            {
+            }
+
             // Test Packet
             peer->Send(m_testPacket);
         }

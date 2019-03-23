@@ -2,6 +2,7 @@
 #include "FluxTypes.h"
 #include "Serializer/Reflection/FluxClassFactory.h"
 #include "Utils/FluxHash.h"
+#include "Utils/FluxNetAllocator.h"
 
 #define FLUX_CLASS(CLASS)                                                                               \
 public:                                                                                                 \
@@ -24,6 +25,10 @@ class CLASS##Class : public Flux::ClassDescriptor                               
 {                                                                                                       \
 public:                                                                                                 \
     using ClassType = CLASS;                                                                            \
+    ISerializable* CreateInstance()                                                                     \
+    {                                                                                                   \
+        return FluxNew ClassType;                                                                       \
+    }                                                                                                   \
     CLASS##Class()                                                                                      \
         : ClassDescriptor(Base)                                                                         \
     {                                                                                                   \
@@ -43,9 +48,13 @@ CLASS##Class        Global##CLASS##Object;                                      
 Flux::ClassDescriptor*    CLASS::StaticClass = &Global##CLASS##Object;                                  \
 void CLASS::Serialize(Flux::IStream* stream)                                                            \
 {                                                                                                       \
+    stream->Write(#CLASS, CLASS::ClassID);                                                              \
     StaticClass->Serialize(stream, this);                                                               \
 }                                                                                                       \
 void CLASS::Deserialize(Flux::IStream* stream)                                                          \
 {                                                                                                       \
+    uint32 classId = 0;                                                                                 \
+    stream->Read(#CLASS, classId);                                                                      \
+    assert(classId == CLASS::ClassID);                                                                  \
     StaticClass->Deserialize(stream, this);                                                             \
 }

@@ -7,6 +7,9 @@
 namespace Flux
 {
     class ClassDescriptor;
+    class ISerializable;
+    class IStream;
+
     class ClassFactory
     {
     private:
@@ -22,6 +25,8 @@ namespace Flux
 
             m_classes[TClass::ClassID] = TClass::StaticClass;
         }
+
+        ISerializable*  CreateClass(IStream* stream);
 
     private:
         static ClassFactory*    ms_instance;

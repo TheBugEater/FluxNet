@@ -13,6 +13,8 @@ namespace Flux
         ClassDescriptor(ClassDescriptor* superClass);
         virtual ~ClassDescriptor() {}
 
+        virtual ISerializable*      CreateInstance() = 0;
+
         template<typename TProperty, typename TClass>
         void AddProperty(TProperty TClass::*member)
         {

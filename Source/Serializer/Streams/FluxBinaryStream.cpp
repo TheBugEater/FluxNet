@@ -6,6 +6,7 @@ namespace Flux
     BinaryStream::BinaryStream()
         : m_capacity(BINARY_STREAM_CAPACITY)
         , m_size(0)
+        , m_index(0)
     {
         m_buffer = (uint8*)malloc(m_capacity * sizeof(uint8));
     }
@@ -96,6 +97,11 @@ namespace Flux
         ReadFromBuffer(&value, sizeof(int64));
     }
 
+    void BinaryStream::Reset()
+    {
+        m_index = 0;
+    }
+
     uint32 BinaryStream::GetBuffer(uint8* buffer, uint32 bufferSize)
     {
         if (bufferSize < m_size)
@@ -117,21 +123,37 @@ namespace Flux
         return m_size;
     }
 
+    Bool BinaryStream::LoadFromBuffer(const uint8* buffer, uint32 size)
+    {
+        if (m_capacity < size)
+        {
+            m_capacity = size;
+            m_buffer = (uint8*)realloc(m_buffer, m_capacity * sizeof(uint8));
+        }
+        memcpy(m_buffer, buffer, size);
+        m_size = size;
+
+        m_index = 0;
+
+        return True;
+    }
+
     void BinaryStream::CopyToBuffer(void* value, uint32 length)
     {
-        if (m_size + length > m_capacity)
+        m_size += length;
+        if (m_size > m_capacity)
         {
             m_capacity += BINARY_STREAM_CAPACITY;
             m_buffer = (uint8*)realloc(m_buffer, m_capacity * sizeof(uint8));
         }
 
-        memcpy(m_buffer + m_size, value, length);
-        m_size += length;
+        memcpy(m_buffer + m_index, value, length);
+        m_index += length;
     }
 
     void BinaryStream::ReadFromBuffer(void* value, uint32 length)
     {
-        memcpy(value, m_buffer + m_size, length);
-        m_size += length;
+        memcpy(value, m_buffer + m_index, length);
+        m_index += length;
     }
 }
