@@ -1,11 +1,12 @@
 #pragma once
 #include <unordered_map>
 #include "FluxTypes.h"
+#include <assert.h>
 
 // Replace key with CRC32 later
 namespace Flux
 {
-    class ClassBase;
+    class ClassDescriptor;
     class ClassFactory
     {
     private:
@@ -17,12 +18,14 @@ namespace Flux
         template<typename TClass>
         void    RegisterClass()
         {
-            m_classes[TClass::GetClassName()] = TClass::StaticClass;
+            assert(m_classes.find(TClass::ClassID) == m_classes.end() && "CRC32 Collision or Registering the Same Class Twice");
+
+            m_classes[TClass::ClassID] = TClass::StaticClass;
         }
 
     private:
         static ClassFactory*    ms_instance;
 
-        std::unordered_map<std::string, ClassBase*>  m_classes;
+        std::unordered_map<uint32, ClassDescriptor*>  m_classes;
     };
 }

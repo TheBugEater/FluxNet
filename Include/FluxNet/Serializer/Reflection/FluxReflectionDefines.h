@@ -1,13 +1,15 @@
 #pragma once
 #include "FluxTypes.h"
 #include "Serializer/Reflection/FluxClassFactory.h"
+#include "Utils/FluxHash.h"
 
 #define FLUX_CLASS(CLASS)                                                                               \
 public:                                                                                                 \
 friend class CLASS##Class;                                                                              \
-static Flux::ClassBase* StaticClass;                                                                    \
+static Flux::ClassDescriptor* StaticClass;                                                              \
+static constexpr uint32 ClassID = Flux::CRC32(#CLASS);                                                  \
 static const char*      GetClassName() { return #CLASS; }                                               \
-virtual class Flux::ClassBase* GetClass() const { return CLASS::StaticClass; }                          \
+virtual class Flux::ClassDescriptor* GetClass() const { return CLASS::StaticClass; }                    \
 void    Serialize(Flux::IStream* stream);                                                               \
 void    Deserialize(Flux::IStream* stream);
 
@@ -18,12 +20,12 @@ void    Deserialize(Flux::IStream* stream);
         FLUX_BEGIN_CLASS_IMPL(CLASS, Base::StaticClass)
 
 #define FLUX_BEGIN_CLASS_IMPL(CLASS, Base)                                                              \
-class CLASS##Class : public Flux::ClassBase                                                             \
+class CLASS##Class : public Flux::ClassDescriptor                                                       \
 {                                                                                                       \
 public:                                                                                                 \
     using ClassType = CLASS;                                                                            \
     CLASS##Class()                                                                                      \
-        : ClassBase(Base)                                                                               \
+        : ClassDescriptor(Base)                                                                         \
     {                                                                                                   \
         RegisterClass();                                                                                \
         ClassFactory::Instance()->RegisterClass<ClassType>();                                           \
@@ -38,7 +40,7 @@ public:                                                                         
     }                                                                                                   \
 };                                                                                                      \
 CLASS##Class        Global##CLASS##Object;                                                              \
-Flux::ClassBase*    CLASS::StaticClass = &Global##CLASS##Object;                                        \
+Flux::ClassDescriptor*    CLASS::StaticClass = &Global##CLASS##Object;                                  \
 void CLASS::Serialize(Flux::IStream* stream)                                                            \
 {                                                                                                       \
     StaticClass->Serialize(stream, this);                                                               \

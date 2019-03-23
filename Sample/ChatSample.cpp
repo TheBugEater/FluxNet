@@ -40,11 +40,8 @@ FLUX_END_CLASS(Testo2)
 
 int main()
 {
+    // Test CRC
     static_assert(Flux::CRC32("Hello World") == 0x4a17b156, "CRC Failed");
-    uint32 value = Flux::CRC32("Hello World");
-
-    std::string name = "Hello World";
-    value = Flux::CRC32(name.c_str(), name.size());
 
     ServerConfig config;
     config.Family = Flux::ESocketFamily::IPV4;

@@ -2,13 +2,13 @@
 
 namespace Flux
 {
-    ClassBase::ClassBase(ClassBase* superClass)
+    ClassDescriptor::ClassDescriptor(ClassDescriptor* superClass)
         : m_superClass(superClass)
     {
 
     }
 
-    void ClassBase::Serialize(IStream* stream, ISerializable* object)
+    void ClassDescriptor::Serialize(IStream* stream, ISerializable* object)
     {
         if (m_superClass)
         {
@@ -21,7 +21,7 @@ namespace Flux
         }
     }
 
-    void ClassBase::Deserialize(IStream* stream, ISerializable* object)
+    void ClassDescriptor::Deserialize(IStream* stream, ISerializable* object)
     {
         if (m_superClass)
         {

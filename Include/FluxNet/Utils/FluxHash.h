@@ -94,7 +94,7 @@ namespace Flux
         return CalculateCRC32<length - 2>(string) ^ 0xFFFFFFFF;
     }
 
-    uint32 CRC32(const char* string, uint32 length)
+    static uint32 CRC32(const char* string, uint32 length)
     {
         uint32 crc = 0xFFFFFFFF;
 

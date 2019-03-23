@@ -7,11 +7,11 @@ namespace Flux
     class IStream;
     class ISerializable;
 
-    class ClassBase
+    class ClassDescriptor
     {
     public:
-        ClassBase(ClassBase* superClass);
-        virtual ~ClassBase() {}
+        ClassDescriptor(ClassDescriptor* superClass);
+        virtual ~ClassDescriptor() {}
 
         template<typename TProperty, typename TClass>
         void AddProperty(TProperty TClass::*member)
@@ -25,6 +25,6 @@ namespace Flux
 
     private:
         std::vector<IPropertyBase*> m_properties;
-        ClassBase*                  m_superClass;
+        ClassDescriptor*                  m_superClass;
     };
 }
