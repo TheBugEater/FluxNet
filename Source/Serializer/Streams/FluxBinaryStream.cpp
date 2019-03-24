@@ -57,6 +57,12 @@ namespace Flux
         CopyToBuffer(&value, sizeof(int64));
     }
 
+    void BinaryStream::WriteArray(const char* name, uint8* value, uint32 length)
+    {
+        CopyToBuffer(&length, sizeof(uint32));
+        CopyToBuffer(value, length);
+    }
+
     void BinaryStream::Read(const char* name, uint8& value)
     {
         ReadFromBuffer(&value, sizeof(uint8));
@@ -95,6 +101,12 @@ namespace Flux
     void BinaryStream::Read(const char* name, int64& value)
     {
         ReadFromBuffer(&value, sizeof(int64));
+    }
+
+    void BinaryStream::ReadArray(const char* name, uint8* value, uint32& length)
+    {
+        ReadFromBuffer(&length, sizeof(uint32));
+        ReadFromBuffer(value, length);
     }
 
     void BinaryStream::Reset()

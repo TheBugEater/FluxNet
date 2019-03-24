@@ -1,5 +1,6 @@
 #pragma once
 #include "Serializer/FluxReflection.h"
+#include "Serializer/Streams/FluxBinarySerializableStream.h"
 
 namespace Flux
 {
@@ -8,9 +9,7 @@ namespace Flux
         FLUX_CLASS(Message)
 
     public:
-        uint8*          m_buffer;
-        uint32          m_bufferLength;
-        ISerializable*  m_serializable;
+        BinarySerializableStream    m_stream;
 
         uint16          m_sequence;
         uint8           m_channel;
@@ -25,9 +24,9 @@ namespace Flux
         uint16          m_currentAck;
     };
 
-    class ConnectMessage : public ISerializable
+    class HelloMessage : public ISerializable
     {
-        FLUX_CLASS(ConnectMessage)
+        FLUX_CLASS(HelloMessage)
 
     public:
         uint32              m_magicNumber;

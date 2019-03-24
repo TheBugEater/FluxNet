@@ -1,6 +1,6 @@
 #pragma once
 #include "FluxTypes.h"
-#include "Utils/FluxNetAllocator.h"
+#include "Utils/FluxAllocator.h"
 
 #define DEFINE_SINGLETON(Module)                                                                                                \
 public:                                                                                                                         \

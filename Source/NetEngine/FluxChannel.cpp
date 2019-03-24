@@ -1,5 +1,5 @@
 #include "NetEngine/FluxChannel.h"
-#include "Utils/FluxNetAllocator.h"
+#include "Utils/FluxAllocator.h"
 #include "NetEngine/FluxNetMessages.h"
 #include "Serializer/Streams/FluxBinaryStream.h"
 
@@ -25,22 +25,22 @@ namespace Flux
         Message* pMessage = FluxNew Message();
         pMessage->m_channel = 0;
         pMessage->m_sequence = m_sendSequence;
-        pMessage->m_buffer = FluxNew uint8[stream.GetSize()];
-        pMessage->m_serializable = object->Clone();
-        pMessage->m_bufferLength = stream.GetBuffer(pMessage->m_buffer, stream.GetSize());
+        pMessage->m_stream.LoadFromBinaryStream(&stream);
+        //pMessage->m_serializable = object->Clone();
+        //pMessage->m_bufferLength = stream.GetBuffer(pMessage->m_buffer, stream.GetSize());
 
-        m_sendQueue.push(pMessage);
+        m_outgoingQueue.push(pMessage);
     }
 
     Message* Channel::PopSendQueue()
     {
-        if (m_sendQueue.empty())
+        if (m_outgoingQueue.empty())
         {
             return nullptr;
         }
 
-        Message* pMessage = m_sendQueue.front();
-        m_sendQueue.pop();
+        Message* pMessage = m_outgoingQueue.front();
+        m_outgoingQueue.pop();
         return pMessage;
     }
 

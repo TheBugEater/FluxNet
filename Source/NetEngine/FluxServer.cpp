@@ -2,7 +2,7 @@
 #include "NetEngine/FluxPeer.h"
 #include "Network/FluxNetModulePlatform.h"
 #include "Serializer/Streams/FluxBinaryStream.h"
-#include "Utils/FluxNetAllocator.h"
+#include "Utils/FluxAllocator.h"
 #include "NetEngine/FluxNetMessages.h"
 
 namespace Flux
@@ -58,9 +58,16 @@ namespace Flux
 
             BinaryStream stream;
             stream.LoadFromBuffer((uint8*)m_recvBuffer, recvSize);
-            auto message = ClassFactory::Instance()->GenerateClassHierachy(&stream);
+            auto message = static_cast<Message*>(ClassFactory::Instance()->GenerateClassHierachy(&stream));
             if (message)
             {
+                BinaryStream messageStream;
+                message->m_stream.LoadToBinaryStream(&messageStream);
+                auto otherMessage = ClassFactory::Instance()->GenerateClassHierachy(&messageStream);
+                if (otherMessage)
+                {
+
+                }
             }
 
             // Test Packet

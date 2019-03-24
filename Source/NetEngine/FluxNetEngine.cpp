@@ -1,6 +1,6 @@
 #include "NetEngine/FluxNetEngine.h"
 #include "NetEngine/FluxServer.h"
-#include "Utils/FluxNetAllocator.h"
+#include "Utils/FluxAllocator.h"
 #include "Network/FluxNetModulePlatform.h"
 
 namespace Flux

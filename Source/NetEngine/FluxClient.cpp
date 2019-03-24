@@ -1,7 +1,7 @@
 #include "NetEngine/FluxClient.h"
 #include "NetEngine/FluxPeer.h"
 #include "Network/FluxNetModulePlatform.h"
-#include "Utils/FluxNetAllocator.h"
+#include "Utils/FluxAllocator.h"
 #include "NetEngine/FluxNetMessages.h"
 #include "Serializer/Streams/FluxBinaryStream.h"
 
@@ -31,7 +31,7 @@ namespace Flux
         m_peer = FluxNew Peer(addressDescriptor);
         
         // Connection Message
-        ConnectMessage message;
+        HelloMessage message;
         message.m_magicNumber = 0xDF3B2ECF;
         m_peer->Send(&message);
         

@@ -25,6 +25,13 @@ namespace Flux
             m_properties.push_back(valueProperty);
         }
 
+        template<typename TProperty, typename TClass>
+        void AddDynamicArray(TProperty* TClass::*member, uint32 TClass::*lengthMember)
+        {
+            auto valueProperty = FluxNew DynamicArrayProperty<TProperty, TClass>(member, lengthMember);
+            m_properties.push_back(valueProperty);
+        }
+
         void    Serialize(IStream* stream, ISerializable* object);
         void    Deserialize(IStream* stream, ISerializable* object);
 

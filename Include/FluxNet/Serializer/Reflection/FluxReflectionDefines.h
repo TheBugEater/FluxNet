@@ -2,7 +2,7 @@
 #include "FluxTypes.h"
 #include "Serializer/Reflection/FluxClassFactory.h"
 #include "Utils/FluxHash.h"
-#include "Utils/FluxNetAllocator.h"
+#include "Utils/FluxAllocator.h"
 
 #define FLUX_CLASS(CLASS)                                                                               \
 public:                                                                                                 \
@@ -44,6 +44,9 @@ public:                                                                         
 
 #define FLUX_PROPERTY(Member)                                                                           \
         AddProperty(&ClassType::Member);
+
+#define FLUX_PROPERTY_DYNAMIC_ARRAY(Member, SizeMember)                                                 \
+        AddDynamicArray(&ClassType::Member, &ClassType::SizeMember);
 
 #define FLUX_END_CLASS(CLASS)                                                                           \
     }                                                                                                   \

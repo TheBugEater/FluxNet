@@ -9,7 +9,7 @@ namespace Flux
     {
     public:
         BinaryStream();
-        ~BinaryStream();
+        virtual ~BinaryStream();
 
         virtual void Write(const char* name, uint8 value)           override;
         virtual void Write(const char* name, uint16 value)          override;
@@ -19,6 +19,7 @@ namespace Flux
         virtual void Write(const char* name, int16 value)           override;
         virtual void Write(const char* name, int32 value)           override;
         virtual void Write(const char* name, int64 value)           override;
+        virtual void WriteArray(const char* name, uint8* value, uint32 length) override;
 
         virtual void Read(const char* name, uint8& value)           override;
         virtual void Read(const char* name, uint16& value)          override;
@@ -28,6 +29,7 @@ namespace Flux
         virtual void Read(const char* name, int16& value)           override;
         virtual void Read(const char* name, int32& value)           override;
         virtual void Read(const char* name, int64& value)           override;
+        virtual void ReadArray(const char* name, uint8* value, uint32& length) override;
 
         virtual void Reset()                                        override;
 
@@ -46,8 +48,8 @@ namespace Flux
         void            ReadFromBuffer(void* value, uint32 length);
 
         uint32          m_capacity;
-        uint32          m_size;
         uint32          m_index;
         uint8*          m_buffer;
+        uint32          m_size;
     };
 }

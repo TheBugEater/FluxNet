@@ -80,4 +80,42 @@ namespace Flux
     private:
         PointerType         m_offset;
     };
+
+    template<typename TProperty, typename TClass>
+    class DynamicArrayProperty : public IPropertyBase
+    {
+    public:
+        using PropertyType = TProperty;
+        using PropertyPointerType = TProperty*;
+        DynamicArrayProperty(TProperty* TClass::*member, uint32 TClass::*lengthMember)
+        {
+            m_offsetBuffer = GetOffset(member);
+            m_offsetLength = GetOffset(lengthMember);
+        }
+
+        virtual void    Serialize(IStream* stream, ISerializable* object)
+        {
+            uint32* lengthValue = (uint32*)((PointerType)object + m_offsetLength);
+            PropertyPointerType* value = (PropertyPointerType*)((PointerType)object + m_offsetBuffer);
+
+            stream->WriteArray("", *value, *lengthValue);
+        }
+
+        virtual void    Deserialize(IStream* stream, ISerializable* object)
+        {
+            uint32* lengthValue = (uint32*)((PointerType)object + m_offsetLength);
+            PropertyPointerType* value = (PropertyPointerType*)((PointerType)object + m_offsetBuffer);
+
+            // Allocate
+            uint32 bufferLength = 0;
+            stream->ReadStealthy(&bufferLength, sizeof(uint32));
+            *value = FluxNew PropertyType[bufferLength];
+
+            stream->ReadArray("", *value, *lengthValue);
+        }
+
+    private:
+        PointerType         m_offsetBuffer;
+        PointerType         m_offsetLength;
+    };
 }
