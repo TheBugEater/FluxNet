@@ -26,8 +26,6 @@ namespace Flux
         pMessage->m_channel = 0;
         pMessage->m_sequence = m_sendSequence;
         pMessage->m_stream.LoadFromBinaryStream(&stream);
-        //pMessage->m_serializable = object->Clone();
-        //pMessage->m_bufferLength = stream.GetBuffer(pMessage->m_buffer, stream.GetSize());
 
         m_outgoingQueue.push(pMessage);
     }
