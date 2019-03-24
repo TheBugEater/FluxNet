@@ -10,6 +10,11 @@ namespace Flux
     public:
         BinaryStream();
         virtual ~BinaryStream();
+        BinaryStream(const BinaryStream& stream);
+        BinaryStream const& operator=(const BinaryStream& stream);
+
+        BinaryStream(BinaryStream&& stream);
+        BinaryStream const& operator=(BinaryStream&& stream);
 
         virtual void Write(const char* name, uint8 value)           override;
         virtual void Write(const char* name, uint16 value)          override;

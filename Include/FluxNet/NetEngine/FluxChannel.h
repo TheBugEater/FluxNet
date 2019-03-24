@@ -29,5 +29,6 @@ namespace Flux
         uint16                  m_recvSequence;
 
         std::queue<Message*>    m_outgoingQueue;
+        std::queue<Message*>    m_sentQueue;
     };
 }

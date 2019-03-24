@@ -24,7 +24,7 @@ namespace Flux
 
         Message* pMessage = FluxNew Message();
         pMessage->m_channel = 0;
-        pMessage->m_sequence = m_sendSequence;
+        pMessage->m_sequence = m_sendSequence++;
         pMessage->m_stream.LoadFromBinaryStream(&stream);
 
         m_outgoingQueue.push(pMessage);
@@ -39,6 +39,9 @@ namespace Flux
 
         Message* pMessage = m_outgoingQueue.front();
         m_outgoingQueue.pop();
+
+        m_sentQueue.push(pMessage);
+
         return pMessage;
     }
 

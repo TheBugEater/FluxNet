@@ -32,7 +32,7 @@ namespace Flux
             m_properties.push_back(valueProperty);
         }
 
-        void    Serialize(IStream* stream, ISerializable* object);
+        void    Serialize(IStream* stream, ISerializable const* object);
         void    Deserialize(IStream* stream, ISerializable* object);
 
     private:

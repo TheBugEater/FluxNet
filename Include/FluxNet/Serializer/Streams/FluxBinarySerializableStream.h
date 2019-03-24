@@ -13,6 +13,12 @@ namespace Flux
         BinarySerializableStream();
         ~BinarySerializableStream();
 
+        BinarySerializableStream(const BinarySerializableStream& stream);
+        BinarySerializableStream const& operator=(const BinarySerializableStream& stream);
+
+        BinarySerializableStream(BinarySerializableStream&& stream);
+        BinarySerializableStream const& operator=(BinarySerializableStream&& stream);
+
         Bool        LoadFromBinaryStream(BinaryStream* stream);
         Bool        LoadToBinaryStream(BinaryStream* stream);
 

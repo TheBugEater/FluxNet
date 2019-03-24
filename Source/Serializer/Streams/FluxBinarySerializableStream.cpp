@@ -13,6 +13,51 @@ namespace Flux
     {
     }
 
+    BinarySerializableStream::BinarySerializableStream(const BinarySerializableStream& stream)
+        : m_buffer(nullptr)
+        , m_bufferLength(0)
+    {
+        if (stream.m_bufferLength > 0)
+        {
+            m_bufferLength = stream.m_bufferLength;
+
+            m_buffer = FluxNew uint8[m_bufferLength];
+            memcpy(m_buffer, stream.m_buffer, m_bufferLength);
+        }
+    }
+
+    BinarySerializableStream::BinarySerializableStream(BinarySerializableStream&& stream)
+    {
+        m_buffer = stream.m_buffer;
+        m_bufferLength = stream.m_bufferLength;
+        
+        stream.m_buffer = nullptr;
+        stream.m_bufferLength = 0;
+    }
+
+    BinarySerializableStream const& BinarySerializableStream::operator=(BinarySerializableStream&& stream)
+    {
+        m_buffer = stream.m_buffer;
+        m_bufferLength = stream.m_bufferLength;
+
+        stream.m_buffer = nullptr;
+        stream.m_bufferLength = 0;
+
+        return *this;
+    }
+
+    BinarySerializableStream const& BinarySerializableStream::operator=(const BinarySerializableStream& stream)
+    {
+        if (stream.m_bufferLength > 0)
+        {
+            m_bufferLength = stream.m_bufferLength;
+
+            m_buffer = FluxNew uint8[m_bufferLength];
+            memcpy(m_buffer, stream.m_buffer, m_bufferLength);
+        }
+        return *this;
+    }
+
     BinarySerializableStream::~BinarySerializableStream()
     {
         if (m_buffer)

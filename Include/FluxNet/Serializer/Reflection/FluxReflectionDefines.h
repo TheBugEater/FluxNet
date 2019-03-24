@@ -12,7 +12,7 @@ static constexpr uint32 ClassID = Flux::CRC32(#CLASS);                          
 static const char*      GetClassName() { return #CLASS; }                                               \
 virtual class Flux::ClassDescriptor* GetClass() const { return CLASS::StaticClass; }                    \
 virtual class Flux::ISerializable* Clone() override;                                                    \
-void    Serialize(Flux::IStream* stream);                                                               \
+void    Serialize(Flux::IStream* stream) const;                                                         \
 void    Deserialize(Flux::IStream* stream);
 
 #define FLUX_BEGIN_CLASS_ROOT(CLASS)                                                                    \
@@ -59,7 +59,7 @@ ISerializable* CLASS::Clone()                                                   
     memcpy(object, this, sizeof(CLASS));                                                                \
     return object;                                                                                      \
 }                                                                                                       \
-void CLASS::Serialize(Flux::IStream* stream)                                                            \
+void CLASS::Serialize(Flux::IStream* stream) const                                                      \
 {                                                                                                       \
     StaticClass->Serialize(stream, this);                                                               \
 }                                                                                                       \

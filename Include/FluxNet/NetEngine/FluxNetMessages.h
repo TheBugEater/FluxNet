@@ -15,13 +15,15 @@ namespace Flux
         uint8           m_channel;
     };
 
-    class PacketHeader : public ISerializable
+    class Packet : public ISerializable
     {
-        FLUX_CLASS(PacketHeader)
+        FLUX_CLASS(Packet)
 
     public:
-        uint32          m_ackBits;
-        uint16          m_currentAck;
+        uint32                      m_ackBits;
+        uint16                      m_lastReceivedSequence;
+        uint16                      m_packetSequence;
+        BinarySerializableStream    m_stream;
     };
 
     class HelloMessage : public ISerializable

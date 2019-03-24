@@ -7,6 +7,7 @@ namespace Flux
         : m_capacity(BINARY_STREAM_CAPACITY)
         , m_size(0)
         , m_index(0)
+        , m_buffer(nullptr)
     {
         m_buffer = (uint8*)malloc(m_capacity * sizeof(uint8));
     }
@@ -15,6 +16,61 @@ namespace Flux
     {
         free(m_buffer);
         m_buffer = nullptr;
+    }
+
+    BinaryStream::BinaryStream(const BinaryStream& stream)
+        : m_capacity(BINARY_STREAM_CAPACITY)
+        , m_size(0)
+        , m_index(0)
+        , m_buffer(nullptr)
+    {
+        if (stream.m_size > 0)
+        {
+            m_capacity = m_size = stream.m_size;
+
+            m_buffer = (uint8*)malloc(m_capacity * sizeof(uint8));
+            memcpy(m_buffer, stream.m_buffer, m_size);
+        }
+        else
+        {
+            m_buffer = (uint8*)malloc(m_capacity * sizeof(uint8));
+        }
+    }
+
+    BinaryStream::BinaryStream(BinaryStream&& stream)
+    {
+        m_buffer = stream.m_buffer;
+        m_size = stream.m_size;
+        m_capacity = stream.m_capacity;
+
+        stream.m_buffer = nullptr;
+        stream.m_size = 0;
+        stream.m_capacity = 0;
+    }
+
+    BinaryStream const& BinaryStream::operator=(BinaryStream&& stream)
+    {
+        m_buffer = stream.m_buffer;
+        m_size = stream.m_size;
+        m_capacity = stream.m_capacity;
+
+        stream.m_buffer = nullptr;
+        stream.m_size = 0;
+        stream.m_capacity = 0;
+
+        return *this;
+    }
+
+    BinaryStream const& BinaryStream::operator=(const BinaryStream& stream)
+    {
+        if (stream.m_size > 0)
+        {
+            m_capacity = m_size = stream.m_size;
+
+            m_buffer = (uint8*)malloc(m_capacity * sizeof(uint8));
+            memcpy(m_buffer, stream.m_buffer, m_size);
+        }
+        return *this;
     }
 
     void BinaryStream::Write(const char* name, uint8 value)

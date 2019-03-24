@@ -58,15 +58,14 @@ namespace Flux
 
             BinaryStream stream;
             stream.LoadFromBuffer((uint8*)m_recvBuffer, recvSize);
-            auto message = static_cast<Message*>(ClassFactory::Instance()->GenerateClassHierachy(&stream));
+            auto message = static_cast<Packet*>(ClassFactory::Instance()->GenerateClassHierachy(&stream));
             if (message)
             {
-                BinaryStream messageStream;
-                message->m_stream.LoadToBinaryStream(&messageStream);
-                auto otherMessage = ClassFactory::Instance()->GenerateClassHierachy(&messageStream);
-                if (otherMessage)
+                message->m_stream.LoadToBinaryStream(&stream);
+                auto otherMessage = ClassFactory::Instance()->GenerateClassHierachy(&stream);
+                while (otherMessage)
                 {
-
+                    otherMessage = ClassFactory::Instance()->GenerateClassHierachy(&stream);
                 }
             }
 

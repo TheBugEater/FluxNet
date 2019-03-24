@@ -18,8 +18,8 @@ namespace Flux
     {
     public:
         virtual ~IPropertyBase() {}
-        virtual void    Serialize(IStream* stream, ISerializable* object) = 0;
-        virtual void    Deserialize(IStream* stream, ISerializable* object) = 0;
+        virtual void    Serialize(IStream* stream, ISerializable const* object) = 0;
+        virtual void    Deserialize(IStream* stream, ISerializable* object)     = 0;
     };
 
     template<typename T>
@@ -64,7 +64,7 @@ namespace Flux
             m_offset = GetOffset(member);
         }
 
-        virtual void    Serialize(IStream* stream, ISerializable* object)
+        virtual void    Serialize(IStream* stream, ISerializable const* object)
         {
             PropertyType* value = (PropertyType*)((PointerType)object + m_offset);
             stream->Write("", *value);
@@ -93,7 +93,7 @@ namespace Flux
             m_offsetLength = GetOffset(lengthMember);
         }
 
-        virtual void    Serialize(IStream* stream, ISerializable* object)
+        virtual void    Serialize(IStream* stream, ISerializable const* object)
         {
             uint32* lengthValue = (uint32*)((PointerType)object + m_offsetLength);
             PropertyPointerType* value = (PropertyPointerType*)((PointerType)object + m_offsetBuffer);

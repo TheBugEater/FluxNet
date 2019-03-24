@@ -8,7 +8,7 @@ namespace Flux
 
     }
 
-    void ClassDescriptor::Serialize(IStream* stream, ISerializable* object)
+    void ClassDescriptor::Serialize(IStream* stream, ISerializable const* object)
     {
         if (m_superClass)
         {

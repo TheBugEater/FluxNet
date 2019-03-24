@@ -22,7 +22,7 @@ namespace Flux
         virtual void    WriteArray(const char* name, uint8* value, uint32 length)   = 0;
 
         template<typename T>
-        void    Write(const char* name, T value)
+        void    Write(const char* name, T const& value)
         {
             value.Serialize(this);
         }

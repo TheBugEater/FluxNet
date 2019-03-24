@@ -26,6 +26,8 @@ using PlatformSocket        = SOCKET;
 using PlatformSocketAddr    = SOCKADDR_IN;
 #endif
 
+#define MAX_PACKET_SEQUENCE 32
+
 namespace Flux
 {
     enum class ESocketFamily
