@@ -3,6 +3,9 @@
 #include "Serializer/FluxReflection.h"
 #include "Utils/FluxHash.h"
 #include "Serializer/Reflection/FluxClassFactory.h"
+#include "NetEngine/FluxNetNotificationHandler.h"
+#include "NetEngine/FluxNetMessages.h"
+#include "NetEngine/FluxPeer.h"
 
 #define HOST_IP     "0.0.0.0"
 #define HOST_PORT   3850
@@ -39,10 +42,27 @@ FLUX_BEGIN_CLASS_ROOT(Testo2)
     FLUX_PROPERTY(testo)
 FLUX_END_CLASS(Testo2)
 
+class Notifications : public Flux::INetNotificationHandler
+{
+public:
+    virtual void OnMessage(Peer* pPeer, ISerializable* message) override
+    {
+        if (message->GetClass()->GetClassID() == Flux::HelloMessage::ClassID)
+        {
+            Testo test;
+            test.value = 1000;
+            test.valueShort = 2434;
+            pPeer->Send(&test);
+        }
+    }
+};
+
 int main()
 {
     // Test CRC
     static_assert(Flux::CRC32("Hello World") == 0x4a17b156, "CRC Failed");
+
+    Notifications notifier;
 
     ServerConfig config;
     config.Family = Flux::ESocketFamily::IPV4;
@@ -55,6 +75,7 @@ int main()
     {
         return -1;
     }
+    pServer->SetNotificationHandler(&notifier);
 
     // Loopback Client
     ClientConfig clientConfig;
@@ -63,6 +84,7 @@ int main()
     clientConfig.ServerPort = HOST_PORT;
     Client* pClient = NetEngine::Instance()->CreateClient(clientConfig);
     pClient->Connect();
+    pClient->SetNotificationHandler(&notifier);
 
     Testo2 test, test2;
     test.testo.value = 2323;

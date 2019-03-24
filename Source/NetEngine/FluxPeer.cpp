@@ -7,11 +7,21 @@ namespace Flux
 
     Peer::Peer(SocketAddressDescriptor const& descriptor)
         : m_address(descriptor)
-        , m_channel(EChannelType::Reliable_Ordered)
+        , m_channel(this, EChannelType::Reliable_Ordered)
         , m_recentAcks(0)
         , m_packetSequence(0)
         , m_lastReceivedSequence(0)
     {
+        m_pBinaryStream = FluxNew BinaryStream;
+    }
+
+    Peer::~Peer()
+    {
+        if (m_pBinaryStream)
+        {
+            FluxDelete m_pBinaryStream;
+            m_pBinaryStream = nullptr;
+        }
     }
 
     void Peer::Send(ISerializable* object)
@@ -19,23 +29,54 @@ namespace Flux
         m_channel.Send(object);
     }
 
-    void Peer::SerializePacket(IStream* stream)
+    void Peer::CreateOutgoingPacket(IStream* stream)
     {
+        Message* pMessage = m_channel.PopOutgoingMessage();
+        if (!pMessage)
+        {
+            return;
+        }
+
+        m_pBinaryStream->Reset();
+        while (pMessage)
+        {
+            pMessage->Serialize(m_pBinaryStream);
+            pMessage = m_channel.PopOutgoingMessage();
+        }
+
         Packet currentPacket;
         currentPacket.m_packetSequence = GetNextSequence();
         currentPacket.m_lastReceivedSequence = m_lastReceivedSequence;
         currentPacket.m_ackBits = m_recentAcks;
-
-        BinaryStream messageStream;
-        Message* pMessage = m_channel.PopSendQueue();
-        while (pMessage)
-        {
-            pMessage->Serialize(&messageStream);
-            pMessage = m_channel.PopSendQueue();
-        }
-        currentPacket.m_stream.LoadFromBinaryStream(&messageStream);
+        currentPacket.m_stream.LoadFromBinaryStream(m_pBinaryStream);
 
         currentPacket.Serialize(stream);
+    }
+
+    void Peer::ProcessIncomingPacket(IStream* stream)
+    {
+        auto message = ClassFactory::Instance()->GenerateClassHierachyType<Packet>(stream);
+        if (message)
+        {
+            m_lastReceivedSequence = message->m_packetSequence;
+            m_recentAcks <<= 1;
+            m_recentAcks |= (1 << 0);
+
+            m_pBinaryStream->Reset();
+            message->m_stream.LoadToBinaryStream(m_pBinaryStream);
+            auto otherMessage = ClassFactory::Instance()->GenerateClassHierachyType<Message>(m_pBinaryStream);
+            while (otherMessage)
+            {
+                // @todo: retrieve the channel then push -> otherMessage->m_channel;
+                m_channel.PushIncomingMessage(otherMessage);
+                otherMessage = ClassFactory::Instance()->GenerateClassHierachyType<Message>(m_pBinaryStream);
+            }
+        }
+    }
+
+    void Peer::ProcessNotifications(INetNotificationHandler* pHandler)
+    {
+        m_channel.ProcessNotifications(pHandler);
     }
 
     SocketAddressDescriptor const& Peer::GetAddressDescriptor() const

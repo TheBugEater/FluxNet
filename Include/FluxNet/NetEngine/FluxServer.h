@@ -8,6 +8,7 @@
 namespace Flux
 {
     class Peer;
+    class INetNotificationHandler;
 
     struct ServerConfig
     {
@@ -22,26 +23,28 @@ namespace Flux
         Server(ServerConfig const& config);
         virtual ~Server();
 
-        virtual void            Update() override;
-        void                    FlushSend();
-        Peer*                   FindPeerByAddress(SocketAddressDescriptor const& descriptor);
+        virtual void                Update() override;
+        void                        FlushSend();
+        void                        ProcessNotifications();
+        Peer*                       FindPeerByAddress(SocketAddressDescriptor const& descriptor);
 
     public:
-        Bool                    Listen();
+        Bool                        Listen();
+        void                        SetNotificationHandler(INetNotificationHandler* pHandler);
 
     private:
-        std::vector<Peer*>      m_peers;
-        SocketDescriptor        m_socket;
+        std::vector<Peer*>          m_peers;
+        SocketDescriptor            m_socket;
 
-        uint8                   m_recvBuffer[FLUX_NET_MTU];
-        SocketAddressDescriptor m_recvAddress;
+        uint8                       m_recvBuffer[FLUX_NET_MTU];
+        SocketAddressDescriptor     m_recvAddress;
 
-        ServerConfig            m_config;
-
+        ServerConfig                m_config;
+        INetNotificationHandler*    m_pNotifier;
 #ifdef _DEBUG
-        class TestMessage*      m_testPacket;
+        class TestMessage*          m_testPacket;
 #endif
 
-        friend class            NetEngine;
+        friend class                NetEngine;
     };
 }

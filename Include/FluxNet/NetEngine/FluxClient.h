@@ -6,6 +6,7 @@
 namespace Flux
 {
     class Peer;
+    class INetNotificationHandler;
 
     struct ClientConfig
     {
@@ -20,22 +21,28 @@ namespace Flux
         Client(ClientConfig const& config);
         ~Client();
 
-        virtual void            Update() override;
-        void                    FlushSend();
+        virtual void                Update() override;
+        void                        FlushSend();
+
     public:
 
-        Bool                    Connect();
+        Bool                        Connect();
 
+        void                        Reset();
+        void                        SetNotificationHandler(INetNotificationHandler* pHandler);
 
     private:
-        Peer*                   m_peer;
-        SocketDescriptor        m_socket;
 
-        uint8                   m_recvBuffer[FLUX_NET_MTU];
-        SocketAddressDescriptor m_recvAddress;
+        Peer*                       m_peer;
+        SocketDescriptor            m_socket;
 
-        ClientConfig            m_config;
+        INetNotificationHandler*    m_pNotifier;
 
-        friend class            NetEngine;
+        uint8                       m_recvBuffer[FLUX_NET_MTU];
+        SocketAddressDescriptor     m_recvAddress;
+
+        ClientConfig                m_config;
+
+        friend class                NetEngine;
     };
 }

@@ -5,27 +5,33 @@ namespace Flux
 {
     class ISerializable;
     class IStream;
+    class BinaryStream;
+    class INetNotificationHandler;
 
     class Peer
     {
     public:
         Peer(SocketAddressDescriptor const& descriptor);
+        virtual ~Peer();
 
         void                            Send(ISerializable* object);
 
-        void                            SerializePacket(IStream* stream);
+        void                            CreateOutgoingPacket(IStream* stream);
+        void                            ProcessIncomingPacket(IStream* stream);
+        void                            ProcessNotifications(INetNotificationHandler* pHandler);
 
         SocketAddressDescriptor const&  GetAddressDescriptor() const;
 
     private:
-        uint32                  GetNextSequence();
+        uint32                          GetNextSequence();
 
-        Channel                 m_channel;
-        uint32                  m_recentAcks;
-        uint16                  m_lastReceivedSequence;
+        Channel                         m_channel;
+        uint32                          m_recentAcks;
+        uint16                          m_lastReceivedSequence;
 
-        uint16                  m_packetSequence;
+        uint16                          m_packetSequence;
 
-        SocketAddressDescriptor m_address;
+        BinaryStream*                   m_pBinaryStream;
+        SocketAddressDescriptor         m_address;
     };
 }

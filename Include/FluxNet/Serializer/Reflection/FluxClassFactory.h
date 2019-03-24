@@ -25,7 +25,20 @@ namespace Flux
             m_classes[TClass::ClassID] = TClass::StaticClass;
         }
 
+        template<typename T>
+        T*  GenerateClassHierachyType(IStream* stream)
+        {
+            uint32 classId;
+            stream->ReadStealthy(&classId, sizeof(uint32));
+            if (T::StaticClass->GetClassID() == classId)
+            {
+                return static_cast<T*>(GenerateClassHierachy(stream));
+            }
+            return nullptr;
+        }
+
         ISerializable*  GenerateClassHierachy(IStream* stream);
+
         ISerializable*  CreateClass(uint32 ClassID);
 
     private:

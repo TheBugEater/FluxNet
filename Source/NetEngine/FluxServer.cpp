@@ -8,9 +8,9 @@
 namespace Flux
 {
     Server::Server(ServerConfig const& config)
+        : m_config(config)
+        , m_pNotifier(nullptr)
     {
-        m_config = config;
-
         m_testPacket = FluxNew TestMessage();
         m_testPacket->m_value = 103434;
     }
@@ -58,42 +58,40 @@ namespace Flux
 
             BinaryStream stream;
             stream.LoadFromBuffer((uint8*)m_recvBuffer, recvSize);
-            auto message = static_cast<Packet*>(ClassFactory::Instance()->GenerateClassHierachy(&stream));
-            if (message)
-            {
-                message->m_stream.LoadToBinaryStream(&stream);
-                auto otherMessage = ClassFactory::Instance()->GenerateClassHierachy(&stream);
-                while (otherMessage)
-                {
-                    otherMessage = ClassFactory::Instance()->GenerateClassHierachy(&stream);
-                }
-            }
-
-            // Test Packet
-            peer->Send(m_testPacket);
+            peer->ProcessIncomingPacket(&stream);
         }
         FlushSend();
+        ProcessNotifications();
     }
 
     void Server::FlushSend()
     {
         uint8 buffer[FLUX_NET_MTU];
-        BinaryStream binarStream;
+        BinaryStream binaryStream;
 
         for (auto peer : m_peers)
         {
-            if (peer == nullptr)
-            {
-                continue;
-            }
+            peer->CreateOutgoingPacket(&binaryStream);
 
-            peer->SerializePacket(&binarStream);
-
-            if (!binarStream.IsEmpty())
+            if (!binaryStream.IsEmpty())
             {
-                uint32 length = binarStream.GetBuffer(buffer, FLUX_NET_MTU);
+                uint32 length = binaryStream.GetBuffer(buffer, FLUX_NET_MTU);
                 NetModule::SendMessage(m_socket, peer->GetAddressDescriptor(), buffer, length);
             }
+        }
+    }
+
+    void Server::ProcessNotifications()
+    {
+        if (!m_pNotifier)
+        {
+            return;
+        }
+
+        // Later replace with a Hash Map
+        for (auto peer : m_peers)
+        {
+            peer->ProcessNotifications(m_pNotifier);
         }
     }
 
@@ -102,7 +100,7 @@ namespace Flux
         // Later replace with a Hash Map
         for (auto peer : m_peers)
         {
-            if (peer && peer->GetAddressDescriptor().Compare(descriptor))
+            if (peer->GetAddressDescriptor().Compare(descriptor))
             {
                 return peer;
             }
@@ -111,4 +109,8 @@ namespace Flux
         return nullptr;
     }
 
+    void Server::SetNotificationHandler(INetNotificationHandler* pHandler)
+    {
+        m_pNotifier = pHandler;
+    }
 }

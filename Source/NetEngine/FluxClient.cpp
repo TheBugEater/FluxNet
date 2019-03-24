@@ -8,8 +8,10 @@
 namespace Flux
 {
     Client::Client(ClientConfig const& config)
+        : m_config(config)
+        , m_pNotifier(nullptr)
+        , m_peer(nullptr)
     {
-        m_config = config;
     }
 
     Client::~Client()
@@ -18,6 +20,8 @@ namespace Flux
 
     Bool Client::Connect()
     {
+        Reset();
+
         m_socket = NetModule::CreateSocket(m_config.Family);
 
         SocketAddressDescriptor addressDescriptor;
@@ -28,20 +32,49 @@ namespace Flux
             return False;
         }
 
+        if (NetModule::SetNonBlocking(m_socket, True) == False)
+        {
+            return False;
+        }
+
         m_peer = FluxNew Peer(addressDescriptor);
         
         // Connection Message
         HelloMessage message;
         message.m_magicNumber = 0xDF3B2ECF;
         m_peer->Send(&message);
-        m_peer->Send(&message);
         
         return True;
     }
 
+    void Client::Reset()
+    {
+        if (m_peer)
+        {
+            FluxDelete m_peer;
+        }
+    }
+
+    void Client::SetNotificationHandler(INetNotificationHandler* pHandler)
+    {
+        m_pNotifier = pHandler;
+    }
+
     void Client::Update()
     {
+        int32 recvSize = NetModule::RecvMessage(m_socket, m_recvAddress, m_recvBuffer, FLUX_NET_MTU);
+        if (recvSize > 0)
+        {
+            BinaryStream stream;
+            stream.LoadFromBuffer((uint8*)m_recvBuffer, recvSize);
+            m_peer->ProcessIncomingPacket(&stream);
+        }
+
         FlushSend();
+        if (m_pNotifier)
+        {
+            m_peer->ProcessNotifications(m_pNotifier);
+        }
     }
 
     void Client::FlushSend()
@@ -49,7 +82,7 @@ namespace Flux
         uint8 buffer[FLUX_NET_MTU];
         BinaryStream binaryStream;
 
-        m_peer->SerializePacket(&binaryStream);
+        m_peer->CreateOutgoingPacket(&binaryStream);
         if (!binaryStream.IsEmpty())
         {
             uint32 length = binaryStream.GetBuffer(buffer, FLUX_NET_MTU);
