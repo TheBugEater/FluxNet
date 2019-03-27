@@ -82,4 +82,8 @@ namespace Flux
             m_incomingQueue.pop();
         }
     }
+
+    void Channel::Update()
+    {
+    }
 }

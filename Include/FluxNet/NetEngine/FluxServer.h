@@ -41,10 +41,6 @@ namespace Flux
 
         ServerConfig                m_config;
         INetNotificationHandler*    m_pNotifier;
-#ifdef _DEBUG
-        class TestMessage*          m_testPacket;
-#endif
-
         friend class                NetEngine;
     };
 }

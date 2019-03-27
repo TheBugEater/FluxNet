@@ -11,8 +11,6 @@ namespace Flux
         : m_config(config)
         , m_pNotifier(nullptr)
     {
-        m_testPacket = FluxNew TestMessage();
-        m_testPacket->m_value = 103434;
     }
 
     Server::~Server()

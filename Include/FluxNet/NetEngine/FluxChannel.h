@@ -28,6 +28,8 @@ namespace Flux
         void                            PushIncomingMessage(Message* pMessage);
 
         void                            ProcessNotifications(INetNotificationHandler* pHandler);
+        void                            Update();
+
     private:
         EChannelType                    m_channelType;
         Peer*                           m_pOwner;
