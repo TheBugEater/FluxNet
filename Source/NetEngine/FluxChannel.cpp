@@ -75,6 +75,8 @@ namespace Flux
                 ISerializable* pUserMessage = ClassFactory::Instance()->GenerateClassHierachy(m_pBinaryStream);
                 pHandler->OnMessage(m_pOwner, pUserMessage);
                 FluxDelete pMessage;
+
+                m_pBinaryStream->Reset();
             }
 
             m_incomingQueue.pop();

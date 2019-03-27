@@ -168,6 +168,7 @@ namespace Flux
     void BinaryStream::Reset()
     {
         m_index = 0;
+        m_size = 0;
     }
 
     uint32 BinaryStream::GetBuffer(uint8* buffer, uint32 bufferSize)

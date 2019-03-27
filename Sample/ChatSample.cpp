@@ -54,6 +54,12 @@ public:
             test.valueShort = 2434;
             pPeer->Send(&test);
         }
+        else if (message->GetClass()->GetClassID() == Testo::ClassID)
+        {
+            Flux::HelloMessage hello;
+            hello.m_magicNumber = 0xFFFFAABB;
+            pPeer->Send(&hello);
+        }
     }
 };
 
