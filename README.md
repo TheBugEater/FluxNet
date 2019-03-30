@@ -3,7 +3,7 @@ A Cross Platform Multiplayer Networking Library
 
 #### FluxNet 1.0 Feature Plan
 
-- [X] Serialization
+- [ ] Serialization
   - [X] Reflecting C++ Classes
   - [X] Binary Streams
   - [X] Compile Time CRC32
