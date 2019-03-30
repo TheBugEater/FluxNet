@@ -1,6 +1,7 @@
 #pragma once
 #include "Serializer/FluxReflection.h"
 #include "Serializer/Streams/FluxBinarySerializableStream.h"
+#include <chrono>
 
 namespace Flux
 {
@@ -9,10 +10,18 @@ namespace Flux
         FLUX_CLASS(Message)
 
     public:
+        Message()
+            : m_numRetries(0)
+        {
+        }
+
         BinarySerializableStream    m_stream;
 
         uint16          m_sequence;
         uint8           m_channel;
+
+        std::chrono::system_clock::time_point           m_lastSentTime;
+        uint16                                          m_numRetries;
     };
 
     class Packet : public ISerializable

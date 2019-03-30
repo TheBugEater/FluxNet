@@ -1,6 +1,8 @@
 #pragma once
 #include "FluxTypes.h"
-#include <queue>
+#include "Utils/FluxCircularBuffer.h"
+#include <vector>
+#include <chrono>
 
 namespace Flux
 {
@@ -22,13 +24,16 @@ namespace Flux
         Channel(Peer* pOwner, EChannelType type);
         virtual ~Channel();
 
+        template<uint16 Capacity, Bool Overwrite = True>
+        using MessageQueue = CircularSequenceBuffer<Message*, Capacity, Overwrite, nullptr>;
+
         void                            Send(ISerializable* object);
 
         Message*                        PopOutgoingMessage();
         void                            PushIncomingMessage(Message* pMessage);
 
         void                            ProcessNotifications(INetNotificationHandler* pHandler);
-        void                            Update();
+        void                            Update(std::chrono::system_clock::time_point const& currentTime);
 
     private:
         EChannelType                    m_channelType;
@@ -37,10 +42,10 @@ namespace Flux
         uint16                          m_sendSequence;
         uint16                          m_recvSequence;
 
-        std::queue<Message*>            m_incomingQueue;
-
         BinaryStream*                   m_pBinaryStream;
-        std::queue<Message*>            m_outgoingQueue;
-        std::queue<Message*>            m_sentQueue;
+
+        MessageQueue<256, False>        m_incomingQueue;
+        MessageQueue<256, False>        m_outgoingQueue;
+        std::vector<Message*>           m_sentMessages;
     };
 }

@@ -37,9 +37,11 @@ namespace Flux
             return;
         }
 
+        auto currentTime = std::chrono::system_clock::now();
         m_pBinaryStream->Reset();
         while (pMessage)
         {
+            pMessage->m_lastSentTime = currentTime;
             pMessage->Serialize(m_pBinaryStream);
             pMessage = m_channel.PopOutgoingMessage();
         }
@@ -77,6 +79,12 @@ namespace Flux
     void Peer::ProcessNotifications(INetNotificationHandler* pHandler)
     {
         m_channel.ProcessNotifications(pHandler);
+    }
+
+    void Peer::Update()
+    {
+        auto currentTime = std::chrono::system_clock::now();
+        m_channel.Update(currentTime);
     }
 
     SocketAddressDescriptor const& Peer::GetAddressDescriptor() const

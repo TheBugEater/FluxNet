@@ -20,6 +20,8 @@ namespace Flux
         void                            ProcessIncomingPacket(IStream* stream);
         void                            ProcessNotifications(INetNotificationHandler* pHandler);
 
+        void                            Update();
+
         SocketAddressDescriptor const&  GetAddressDescriptor() const;
 
     private:

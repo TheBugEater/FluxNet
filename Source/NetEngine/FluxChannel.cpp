@@ -41,34 +41,33 @@ namespace Flux
         pMessage->m_sequence = m_sendSequence++;
         pMessage->m_stream.LoadFromBinaryStream(m_pBinaryStream);
 
-        m_outgoingQueue.push(pMessage);
+        m_sentMessages.push_back(pMessage);
+        m_outgoingQueue.Push(pMessage);
     }
 
     Message* Channel::PopOutgoingMessage()
     {
-        if (m_outgoingQueue.empty())
+        if (m_outgoingQueue.Empty())
         {
             return nullptr;
         }
 
-        Message* pMessage = m_outgoingQueue.front();
-        m_outgoingQueue.pop();
-
-        m_sentQueue.push(pMessage);
+        Message* pMessage = m_outgoingQueue.Front();
+        m_outgoingQueue.Pop();
 
         return pMessage;
     }
 
     void Channel::PushIncomingMessage(Message* pMessage)
     {
-        m_incomingQueue.push(pMessage);
+        m_incomingQueue.Push(pMessage);
     }
 
     void Channel::ProcessNotifications(INetNotificationHandler* pHandler)
     {
-        while (!m_incomingQueue.empty())
+        while (!m_incomingQueue.Empty())
         {
-            auto pMessage = m_incomingQueue.front();
+            auto pMessage = m_incomingQueue.Front();
             if (pMessage)
             {
                 pMessage->m_stream.LoadToBinaryStream(m_pBinaryStream);
@@ -79,11 +78,20 @@ namespace Flux
                 m_pBinaryStream->Reset();
             }
 
-            m_incomingQueue.pop();
+            m_incomingQueue.Pop();
         }
     }
 
-    void Channel::Update()
+    void Channel::Update(std::chrono::system_clock::time_point const& currentTime)
     {
+        for (auto message : m_sentMessages)
+        {
+            auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - message->m_lastSentTime).count();
+            if (elapsed > FLUX_RESEND_DELAY_MS)
+            {
+                message->m_lastSentTime = currentTime;
+                m_outgoingQueue.Push(message);
+            }
+        }
     }
 }

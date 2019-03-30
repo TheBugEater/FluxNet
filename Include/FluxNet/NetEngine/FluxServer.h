@@ -24,6 +24,8 @@ namespace Flux
         virtual ~Server();
 
         virtual void                Update() override;
+
+        void                        UpdatePeers();
         void                        FlushSend();
         void                        ProcessNotifications();
         Peer*                       FindPeerByAddress(SocketAddressDescriptor const& descriptor);

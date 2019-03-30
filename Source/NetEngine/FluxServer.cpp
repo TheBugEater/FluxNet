@@ -62,6 +62,14 @@ namespace Flux
         ProcessNotifications();
     }
 
+    void Server::UpdatePeers()
+    {
+        for (auto peer : m_peers)
+        {
+            peer->Update();
+        }
+    }
+
     void Server::FlushSend()
     {
         uint8 buffer[FLUX_NET_MTU];

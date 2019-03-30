@@ -15,6 +15,7 @@ using int32             = int;
 using int64             = long long;
 
 using Bool              = uint8;
+using Float             = float;
 
 #define True        1
 #define False       0
@@ -26,7 +27,8 @@ using PlatformSocket        = SOCKET;
 using PlatformSocketAddr    = SOCKADDR_IN;
 #endif
 
-#define MAX_PACKET_SEQUENCE 32
+#define MAX_PACKET_SEQUENCE     32
+#define FLUX_RESEND_DELAY_MS    100 
 
 namespace Flux
 {

@@ -75,6 +75,8 @@ namespace Flux
         {
             m_peer->ProcessNotifications(m_pNotifier);
         }
+
+        m_peer->Update();
     }
 
     void Client::FlushSend()

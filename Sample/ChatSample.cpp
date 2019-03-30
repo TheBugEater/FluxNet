@@ -6,7 +6,7 @@
 #include "NetEngine/FluxNetNotificationHandler.h"
 #include "NetEngine/FluxNetMessages.h"
 #include "NetEngine/FluxPeer.h"
-#include "Utils/FluxQueue.h"
+#include "Utils/FluxCircularBuffer.h"
 
 #define HOST_IP     "0.0.0.0"
 #define HOST_PORT   3850
