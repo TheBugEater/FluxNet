@@ -6,6 +6,7 @@
 #include "NetEngine/FluxNetNotificationHandler.h"
 #include "NetEngine/FluxNetMessages.h"
 #include "NetEngine/FluxPeer.h"
+#include "Utils/FluxQueue.h"
 
 #define HOST_IP     "0.0.0.0"
 #define HOST_PORT   3850
@@ -63,10 +64,25 @@ public:
     }
 };
 
+void TestCircularQueue()
+{
+    CircularSequenceBuffer<uint32, 1024> sequenceBuffer;
+
+    // Pop empty
+    sequenceBuffer.Pop();
+    
+    for (uint16 i = 0; i < 1025; i++)
+    {
+        sequenceBuffer.Push(rand() % 256);
+    }
+}
+
 int main()
 {
     // Test CRC
     static_assert(Flux::CRC32("Hello World") == 0x4a17b156, "CRC Failed");
+
+    TestCircularQueue();
 
     Notifications notifier;
 
