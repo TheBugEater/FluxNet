@@ -1,9 +1,10 @@
 #pragma once
 #include "FluxTypes.h"
+#include "FluxBitSet.h"
 
 namespace Flux
 {
-    template<typename T, uint16 capacity, Bool overwriteOldSequence = True, T TDefault = T()>
+    template<typename T, uint16 capacity, Bool overwriteOldSequence = True>
     class CircularSequenceBuffer
     {
     public:
@@ -14,73 +15,82 @@ namespace Flux
             Reset();
         }
 
-        void        Push(T const& element);
-        void        Pop();
-        T&          Front();
+        void                Push(T const& element);
+        void                Pop();
+        T const&            Front();
 
-        void        InsertAt(uint16 sequence, T const& element);
-        T&          FindAt(uint16 sequence);
+        void                InsertAt(uint16 sequence, T const& element);
+        T const&            FindAt(uint16 sequence);
 
-        void        Reset();
-        Bool        Empty() const;
+        Bool                IsPresent(uint16 sequence);
+        void                Reset();
+        Bool                Empty() const;
     private:
-        uint16      SequenceRoll(uint16 sequence);
+        uint16              SequenceRoll(uint16 sequence);
 
-        T           m_queue[capacity];
-        uint16      m_pushIndex;
-        uint16      m_readIndex;
+        T                   m_queue[capacity];
+        uint16              m_pushIndex;
+        uint16              m_readIndex;
+        BitSet<capacity>    m_bits;
     };
 
-    template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/, T TDefault /*= T()*/>
-    Bool CircularSequenceBuffer<T, capacity, overwriteOldSequence, TDefault>::Empty() const
+    template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/>
+    Bool CircularSequenceBuffer<T, capacity, overwriteOldSequence>::IsPresent(uint16 sequence)
+    {
+        return m_bits.Get(sequence);
+    }
+
+    template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/>
+    Bool CircularSequenceBuffer<T, capacity, overwriteOldSequence>::Empty() const
     {
         return m_readIndex == m_pushIndex;
     }
 
-    template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/, T TDefault /*= T()*/>
-    void CircularSequenceBuffer<T, capacity, overwriteOldSequence, TDefault>::Reset()
+    template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/>
+    void CircularSequenceBuffer<T, capacity, overwriteOldSequence>::Reset()
     {
-        for (uint16 i = 0; i < capacity; i++)
-        {
-            m_queue[i] = TDefault;
-        }
+        m_bits.Reset();
     }
 
-    template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/, T TDefault /*= T()*/>
-    T& CircularSequenceBuffer<T, capacity, overwriteOldSequence, TDefault>::FindAt(uint16 sequence)
+    template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/>
+    T const& CircularSequenceBuffer<T, capacity, overwriteOldSequence>::FindAt(uint16 sequence)
     {
         uint16 index = SequenceRoll(sequence);
         return m_queue[index];
     }
 
-    template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/, T TDefault /*= T()*/>
-    void CircularSequenceBuffer<T, capacity, overwriteOldSequence, TDefault>::InsertAt(uint16 sequence, T const& element)
+    template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/>
+    void CircularSequenceBuffer<T, capacity, overwriteOldSequence>::InsertAt(uint16 sequence, T const& element)
     {
         uint16 index = SequenceRoll(sequence);
+        if (overwriteOldSequence && m_bits.Get(index))
+        {
+            return;
+        }
+        m_bits.Set(index);
         m_queue[index] = element;
     }
 
-    template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/, T TDefault /*= T()*/>
-    T& CircularSequenceBuffer<T, capacity, overwriteOldSequence, TDefault>::Front()
+    template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/>
+    T const& CircularSequenceBuffer<T, capacity, overwriteOldSequence>::Front()
     {
         return m_queue[m_readIndex];
     }
 
-    template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/, T TDefault /*= T()*/>
-    void CircularSequenceBuffer<T, capacity, overwriteOldSequence, TDefault>::Pop()
+    template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/>
+    void CircularSequenceBuffer<T, capacity, overwriteOldSequence>::Pop()
     {
-        // Empty Queue
         if (Empty())
         {
             return;
         }
 
-        m_queue[m_readIndex] = TDefault;
+        m_bits.Clear(m_readIndex);
         m_readIndex = SequenceRoll(++m_readIndex);
     }
 
-    template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/, T TDefault /*= T()*/>
-    void CircularSequenceBuffer<T, capacity, overwriteOldSequence, TDefault>::Push(T const& element)
+    template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/>
+    void CircularSequenceBuffer<T, capacity, overwriteOldSequence>::Push(T const& element)
     {
         if (!overwriteOldSequence)
         {
@@ -91,12 +101,13 @@ namespace Flux
             }
         }
 
+        m_bits.Set(m_pushIndex);
         m_queue[m_pushIndex] = element;
         m_pushIndex = SequenceRoll(m_pushIndex + 1);
     }
 
-    template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/, T TDefault /*= T()*/>
-    uint16 CircularSequenceBuffer<T, capacity, overwriteOldSequence, TDefault>::SequenceRoll(uint16 sequence)
+    template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/>
+    uint16 CircularSequenceBuffer<T, capacity, overwriteOldSequence>::SequenceRoll(uint16 sequence)
     {
         return sequence % capacity;
     }
