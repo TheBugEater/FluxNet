@@ -22,9 +22,11 @@ namespace Flux
         void                InsertAt(uint16 sequence, T const& element);
         T const&            FindAt(uint16 sequence);
 
-        Bool                IsPresent(uint16 sequence);
+        Bool                IsPresent(uint16 sequence)  const;
         void                Reset();
-        Bool                Empty() const;
+        Bool                IsEmpty() const;
+        Bool                IsFrontExist() const;
+
     private:
         uint16              SequenceRoll(uint16 sequence);
 
@@ -35,15 +37,21 @@ namespace Flux
     };
 
     template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/>
-    Bool CircularSequenceBuffer<T, capacity, overwriteOldSequence>::IsPresent(uint16 sequence)
+    Bool Flux::CircularSequenceBuffer<T, capacity, overwriteOldSequence>::IsFrontExist() const
+    {
+        return m_bits.Get(m_readIndex);
+    }
+
+    template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/>
+    Bool CircularSequenceBuffer<T, capacity, overwriteOldSequence>::IsPresent(uint16 sequence)  const
     {
         return m_bits.Get(sequence);
     }
 
     template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/>
-    Bool CircularSequenceBuffer<T, capacity, overwriteOldSequence>::Empty() const
+    Bool CircularSequenceBuffer<T, capacity, overwriteOldSequence>::IsEmpty() const
     {
-        return m_readIndex == m_pushIndex;
+        return m_bits.IsEmpty();
     }
 
     template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/>
@@ -80,7 +88,7 @@ namespace Flux
     template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/>
     void CircularSequenceBuffer<T, capacity, overwriteOldSequence>::Pop()
     {
-        if (Empty())
+        if (IsEmpty())
         {
             return;
         }
