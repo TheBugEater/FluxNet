@@ -63,7 +63,7 @@ namespace Flux
     void CircularSequenceBuffer<T, capacity, overwriteOldSequence>::InsertAt(uint16 sequence, T const& element)
     {
         uint16 index = SequenceRoll(sequence);
-        if (overwriteOldSequence && m_bits.Get(index))
+        if (!overwriteOldSequence && m_bits.Get(index))
         {
             return;
         }
