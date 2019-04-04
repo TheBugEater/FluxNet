@@ -47,7 +47,7 @@ namespace Flux
 
     Message* Channel::PopOutgoingMessage()
     {
-        if (m_outgoingQueue.Empty())
+        if (m_outgoingQueue.IsEmpty())
         {
             return nullptr;
         }
@@ -65,7 +65,7 @@ namespace Flux
 
     void Channel::ProcessNotifications(INetNotificationHandler* pHandler)
     {
-        while (!m_incomingQueue.Empty())
+        while (!m_incomingQueue.IsEmpty())
         {
             auto pMessage = m_incomingQueue.Front();
             if (pMessage)

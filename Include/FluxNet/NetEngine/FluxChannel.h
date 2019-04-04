@@ -25,7 +25,7 @@ namespace Flux
         virtual ~Channel();
 
         template<uint16 Capacity, Bool Overwrite = True>
-        using MessageQueue = CircularSequenceBuffer<Message*, Capacity, Overwrite, nullptr>;
+        using MessageQueue = CircularSequenceBuffer<Message*, Capacity, Overwrite>;
 
         void                            Send(ISerializable* object);
 
