@@ -1,7 +1,7 @@
 #pragma once
 #include "FluxTypes.h"
 #include "Utils/FluxCircularBuffer.h"
-#include <vector>
+#include <list>
 #include <chrono>
 
 namespace Flux
@@ -46,6 +46,6 @@ namespace Flux
 
         MessageQueue<256, False>        m_incomingQueue;
         MessageQueue<256, False>        m_outgoingQueue;
-        std::vector<Message*>           m_sentMessages;
+        std::list<Message*>             m_sentMessages;
     };
 }

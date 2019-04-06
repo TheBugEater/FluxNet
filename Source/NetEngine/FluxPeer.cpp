@@ -60,9 +60,8 @@ namespace Flux
         auto message = ClassFactory::Instance()->GenerateClassHierachyType<Packet>(stream);
         if (message)
         {
+            m_recvQueue.InsertAt(message->m_packetSequence, True);
             m_lastReceivedSequence = message->m_packetSequence;
-            m_recentAcks <<= 1;
-            m_recentAcks |= (1 << 0);
 
             m_pBinaryStream->Reset();
             message->m_stream.LoadToBinaryStream(m_pBinaryStream);
@@ -90,6 +89,12 @@ namespace Flux
     SocketAddressDescriptor const& Peer::GetAddressDescriptor() const
     {
         return m_address;
+    }
+
+    uint32 Peer::GetLastAckedPackets() const
+    {
+        // Generate 32 Acks from last received
+        return 0;
     }
 
     uint32 Peer::GetNextSequence()
