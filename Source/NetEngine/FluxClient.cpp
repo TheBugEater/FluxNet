@@ -42,7 +42,7 @@ namespace Flux
         // Connection Message
         HelloMessage message;
         message.m_magicNumber = 0xDF3B2ECF;
-        m_peer->Send(&message);
+        m_peer->Send("Protocol", &message);
         
         return True;
     }

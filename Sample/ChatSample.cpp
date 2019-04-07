@@ -8,24 +8,6 @@
 #include "NetEngine/FluxPeer.h"
 #include "Utils/FluxCircularBuffer.h"
 
-static void SocketLog(const char * pszFormat, ...)
-{
-    char szBuf[MAX_PATH];
-
-    va_list ap;
-    va_start(ap, pszFormat);
-    vsnprintf_s(szBuf, MAX_PATH, MAX_PATH, pszFormat, ap);
-    va_end(ap);
-
-    WCHAR wszBuf[MAX_PATH] = { 0 };
-    MultiByteToWideChar(CP_UTF8, 0, szBuf, -1, wszBuf, sizeof(wszBuf));
-    OutputDebugStringW(wszBuf);
-    OutputDebugStringA("\n");
-
-    WideCharToMultiByte(CP_ACP, 0, wszBuf, sizeof(wszBuf), szBuf, sizeof(szBuf), NULL, FALSE);
-    printf("%s\n", szBuf);
-}
-
 #define HOST_IP     "0.0.0.0"
 #define HOST_PORT   3850
 
@@ -144,7 +126,7 @@ int main()
 
         if (pSavedPeer)
         {
-            if (pSavedPeer->Send(&testSend))
+            if (pSavedPeer->Send("DefaultReliable", &testSend))
             {
                 testSend.value++;
             }

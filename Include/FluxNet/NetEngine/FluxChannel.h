@@ -21,7 +21,7 @@ namespace Flux
     class Channel
     {
     public:
-        Channel(Peer* pOwner, EChannelType type);
+        Channel(Peer* pOwner, const char* pChannelName, EChannelType type);
         virtual ~Channel();
 
         template<uint16 Capacity, Bool Overwrite = True>
@@ -29,6 +29,7 @@ namespace Flux
 
         using SentMessageQueue = CircularSequenceBuffer<Message*, 1024, False>;
 
+        uint32                          GetChannelID() const;
         Bool                            Send(ISerializable* object);
 
         Message*                        PopOutgoingMessage();
@@ -39,6 +40,7 @@ namespace Flux
 
         void                            RemoveAckedSequence(uint16 sequence);
     private:
+        uint32                          m_channelID;
         EChannelType                    m_channelType;
         Peer*                           m_pOwner;
 

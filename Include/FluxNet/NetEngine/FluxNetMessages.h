@@ -18,7 +18,7 @@ namespace Flux
         BinarySerializableStream    m_stream;
 
         uint16          m_sequence;
-        uint8           m_channel;
+        uint32          m_channel;
 
         std::chrono::system_clock::time_point           m_lastSentTime;
         uint16                                          m_numRetries;

@@ -4,17 +4,19 @@
 #include "Serializer/Streams/FluxBinaryStream.h"
 #include "NetEngine/FluxNetNotificationHandler.h"
 #include "NetEngine/FluxNetEngineDefines.h"
+#include <chrono>
 
 namespace Flux
 {
 
-    Channel::Channel(Peer* pOwner, EChannelType type)
+    Channel::Channel(Peer* pOwner, const char* pChannelName, EChannelType type)
         : m_pOwner(pOwner)
         , m_channelType(type)
         , m_sendSequence(0)
         , m_recvSequence(0)
         , m_pBinaryStream(nullptr)
     {
+        m_channelID = CRC32(pChannelName, (uint32)strlen(pChannelName));
         m_pBinaryStream = FluxNew BinaryStream();
     }
 
@@ -25,6 +27,11 @@ namespace Flux
             FluxDelete m_pBinaryStream;
             m_pBinaryStream = nullptr;
         }
+    }
+
+    uint32 Channel::GetChannelID() const
+    {
+        return m_channelID;
     }
 
     Bool Channel::Send(ISerializable* object)
@@ -43,7 +50,7 @@ namespace Flux
         }
 
         Message* pMessage = FluxNew Message();
-        pMessage->m_channel = 0;
+        pMessage->m_channel = m_channelID;
         pMessage->m_sequence = m_sendSequence++;
         pMessage->m_stream.LoadFromBinaryStream(m_pBinaryStream);
 
@@ -55,20 +62,31 @@ namespace Flux
 
     Message* Channel::PopOutgoingMessage()
     {
-        if (m_outgoingQueue.IsEmpty())
+        if (!m_outgoingQueue.IsFrontExist())
         {
             return nullptr;
         }
 
         Message* pMessage = m_outgoingQueue.Front();
         m_outgoingQueue.Pop();
+#ifdef DEBUG_RELIABLE_LAYER
+        if(m_channelID == 1927946879)
+        SocketLog("[%x][%d][Sent] Message Sequence %d", m_pOwner, m_channelID, pMessage->m_sequence);
+#endif
 
         return pMessage;
     }
 
     void Channel::PushIncomingMessage(Message* pMessage)
     {
-        m_incomingQueue.InsertAt(pMessage->m_sequence, pMessage);
+        if (pMessage->m_sequence >= m_recvSequence)
+        {
+#ifdef DEBUG_RELIABLE_LAYER
+            if (m_channelID == 1927946879)
+                SocketLog("[%x][%d][Received] Message Sequence %d", m_pOwner, m_channelID, pMessage->m_sequence);
+#endif
+            m_incomingQueue.InsertAt(pMessage->m_sequence, pMessage);
+        }
     }
 
     void Channel::ProcessNotifications(INetNotificationHandler* pHandler)
@@ -76,6 +94,8 @@ namespace Flux
         while (m_incomingQueue.IsFrontExist())
         {
             auto pMessage = m_incomingQueue.Front();
+            m_recvSequence++;
+
             if (pMessage)
             {
                 pMessage->m_stream.LoadToBinaryStream(m_pBinaryStream);
@@ -116,6 +136,9 @@ namespace Flux
             auto pMessage = m_sentMessages.FindAt(sequence);
             if (pMessage)
             {
+#ifdef DEBUG_RELIABLE_LAYER
+                SocketLog("[%x][%d][ACKED] Message Sequence %d:%d", m_pOwner, m_channelID, pMessage->m_sequence, sequence);
+#endif
                 m_sentMessages.RemoveAt(sequence);
                 // Release pMessage
             }
