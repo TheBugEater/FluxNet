@@ -43,11 +43,8 @@ namespace Flux
         uint32              m_magicNumber;
     };
 
-    class TestMessage : public ISerializable
+    class PingMessage : public ISerializable
     {
-        FLUX_CLASS(TestMessage)
-
-    public:
-        uint32              m_value;
+        FLUX_CLASS(PingMessage)
     };
 }

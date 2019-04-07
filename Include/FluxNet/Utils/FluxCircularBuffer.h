@@ -20,7 +20,8 @@ namespace Flux
         T const&            Front();
 
         void                InsertAt(uint16 sequence, T const& element);
-        T const&            FindAt(uint16 sequence);
+        void                RemoveAt(uint16 sequence);
+        T const&            FindAt(uint16 sequence) const;
 
         Bool                IsPresent(uint16 sequence)  const;
         void                Reset();
@@ -28,13 +29,21 @@ namespace Flux
         Bool                IsFrontExist() const;
 
     private:
-        uint16              SequenceRoll(uint16 sequence);
+        uint16              SequenceRoll(uint16 sequence) const;
 
         T                   m_queue[capacity];
         uint16              m_pushIndex;
         uint16              m_readIndex;
         BitSet<capacity>    m_bits;
     };
+
+    template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/>
+    void Flux::CircularSequenceBuffer<T, capacity, overwriteOldSequence>::RemoveAt(uint16 sequence)
+    {
+        uint16 index = SequenceRoll(sequence);
+        m_bits.Clear(index);
+        m_queue[index] = (T)0;
+    }
 
     template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/>
     Bool Flux::CircularSequenceBuffer<T, capacity, overwriteOldSequence>::IsFrontExist() const
@@ -45,7 +54,8 @@ namespace Flux
     template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/>
     Bool CircularSequenceBuffer<T, capacity, overwriteOldSequence>::IsPresent(uint16 sequence)  const
     {
-        return m_bits.Get(sequence);
+        uint16 index = SequenceRoll(sequence);
+        return m_bits.Get(index);
     }
 
     template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/>
@@ -61,7 +71,7 @@ namespace Flux
     }
 
     template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/>
-    T const& CircularSequenceBuffer<T, capacity, overwriteOldSequence>::FindAt(uint16 sequence)
+    T const& CircularSequenceBuffer<T, capacity, overwriteOldSequence>::FindAt(uint16 sequence) const
     {
         uint16 index = SequenceRoll(sequence);
         return m_queue[index];
@@ -115,7 +125,7 @@ namespace Flux
     }
 
     template<typename T, uint16 capacity, Bool overwriteOldSequence /*= True*/>
-    uint16 CircularSequenceBuffer<T, capacity, overwriteOldSequence>::SequenceRoll(uint16 sequence)
+    uint16 CircularSequenceBuffer<T, capacity, overwriteOldSequence>::SequenceRoll(uint16 sequence) const
     {
         return sequence % capacity;
     }

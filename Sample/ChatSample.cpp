@@ -8,10 +8,29 @@
 #include "NetEngine/FluxPeer.h"
 #include "Utils/FluxCircularBuffer.h"
 
+static void SocketLog(const char * pszFormat, ...)
+{
+    char szBuf[MAX_PATH];
+
+    va_list ap;
+    va_start(ap, pszFormat);
+    vsnprintf_s(szBuf, MAX_PATH, MAX_PATH, pszFormat, ap);
+    va_end(ap);
+
+    WCHAR wszBuf[MAX_PATH] = { 0 };
+    MultiByteToWideChar(CP_UTF8, 0, szBuf, -1, wszBuf, sizeof(wszBuf));
+    OutputDebugStringW(wszBuf);
+    OutputDebugStringA("\n");
+
+    WideCharToMultiByte(CP_ACP, 0, wszBuf, sizeof(wszBuf), szBuf, sizeof(szBuf), NULL, FALSE);
+    printf("%s\n", szBuf);
+}
+
 #define HOST_IP     "0.0.0.0"
 #define HOST_PORT   3850
 
 using namespace Flux;
+Flux::Peer*     pSavedPeer = nullptr;
 
 class Testo : public Flux::ISerializable
 {
@@ -50,16 +69,12 @@ public:
     {
         if (message->GetClass()->GetClassID() == Flux::HelloMessage::ClassID)
         {
-            Testo test;
-            test.value = 1000;
-            test.valueShort = 2434;
-            pPeer->Send(&test);
+            pSavedPeer = pPeer;
         }
         else if (message->GetClass()->GetClassID() == Testo::ClassID)
         {
-            Flux::HelloMessage hello;
-            hello.m_magicNumber = 0xFFFFAABB;
-            pPeer->Send(&hello);
+            Testo* test = static_cast<Testo*>(message);
+            SocketLog("Received Sequence : %d", test->value);
         }
     }
 };
@@ -119,10 +134,21 @@ int main()
     stream.Reset();
     ISerializable* value = ClassFactory::Instance()->GenerateClassHierachy(&stream);
 
+    Testo testSend;
+    testSend.value = 0;
+
     while (True)
     {
         NetEngine::Instance()->Update();
         Sleep(10);
+
+        if (pSavedPeer)
+        {
+            if (pSavedPeer->Send(&testSend))
+            {
+                testSend.value++;
+            }
+        }
     }
 
     NetEngine::DestroyInstance();

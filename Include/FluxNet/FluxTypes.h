@@ -27,9 +27,6 @@ using PlatformSocket        = SOCKET;
 using PlatformSocketAddr    = SOCKADDR_IN;
 #endif
 
-#define MAX_PACKET_SEQUENCE     32
-#define FLUX_RESEND_DELAY_MS    100 
-
 namespace Flux
 {
     enum class ESocketFamily
@@ -79,4 +76,9 @@ namespace Flux
         Connected,
         Disconnected
     };
+
+    static uint32      GetRoundIndex(uint32 max, uint32 index)
+    {
+        return (max + index) % max;
+    }
 }

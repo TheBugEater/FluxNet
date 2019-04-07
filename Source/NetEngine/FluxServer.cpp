@@ -58,6 +58,7 @@ namespace Flux
             stream.LoadFromBuffer((uint8*)m_recvBuffer, recvSize);
             peer->ProcessIncomingPacket(&stream);
         }
+        UpdatePeers();
         FlushSend();
         ProcessNotifications();
     }

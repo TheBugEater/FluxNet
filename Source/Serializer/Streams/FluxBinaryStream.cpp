@@ -223,7 +223,7 @@ namespace Flux
         m_size += length;
         if (m_size > m_capacity)
         {
-            m_capacity += BINARY_STREAM_CAPACITY;
+            m_capacity += (length + BINARY_STREAM_CAPACITY);
             m_buffer = (uint8*)realloc(m_buffer, m_capacity * sizeof(uint8));
         }
 

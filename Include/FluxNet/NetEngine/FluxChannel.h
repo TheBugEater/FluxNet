@@ -27,7 +27,9 @@ namespace Flux
         template<uint16 Capacity, Bool Overwrite = True>
         using MessageQueue = CircularSequenceBuffer<Message*, Capacity, Overwrite>;
 
-        void                            Send(ISerializable* object);
+        using SentMessageQueue = CircularSequenceBuffer<Message*, 1024, False>;
+
+        Bool                            Send(ISerializable* object);
 
         Message*                        PopOutgoingMessage();
         void                            PushIncomingMessage(Message* pMessage);
@@ -35,6 +37,7 @@ namespace Flux
         void                            ProcessNotifications(INetNotificationHandler* pHandler);
         void                            Update(std::chrono::system_clock::time_point const& currentTime);
 
+        void                            RemoveAckedSequence(uint16 sequence);
     private:
         EChannelType                    m_channelType;
         Peer*                           m_pOwner;
@@ -46,6 +49,6 @@ namespace Flux
 
         MessageQueue<256, False>        m_incomingQueue;
         MessageQueue<256, False>        m_outgoingQueue;
-        std::list<Message*>             m_sentMessages;
+        SentMessageQueue                m_sentMessages;
     };
 }

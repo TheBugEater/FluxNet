@@ -19,7 +19,6 @@ namespace Flux
         FLUX_PROPERTY(m_magicNumber)
     FLUX_END_CLASS(HelloMessage)
 
-    FLUX_BEGIN_CLASS_ROOT(TestMessage)
-        FLUX_PROPERTY(m_value)
-    FLUX_END_CLASS(TestMessage)
+    FLUX_BEGIN_CLASS_ROOT(PingMessage)
+    FLUX_END_CLASS(PingMessage)
 }

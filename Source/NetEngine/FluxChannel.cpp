@@ -3,6 +3,7 @@
 #include "NetEngine/FluxNetMessages.h"
 #include "Serializer/Streams/FluxBinaryStream.h"
 #include "NetEngine/FluxNetNotificationHandler.h"
+#include "NetEngine/FluxNetEngineDefines.h"
 
 namespace Flux
 {
@@ -26,14 +27,19 @@ namespace Flux
         }
     }
 
-    void Channel::Send(ISerializable* object)
+    Bool Channel::Send(ISerializable* object)
     {
         m_pBinaryStream->Reset();
 
         object->Serialize(m_pBinaryStream);
         if (m_pBinaryStream->IsEmpty())
         {
-            return;
+            return False;
+        }
+
+        if (m_sendSequence > 256)
+        {
+            return False;
         }
 
         Message* pMessage = FluxNew Message();
@@ -41,8 +47,10 @@ namespace Flux
         pMessage->m_sequence = m_sendSequence++;
         pMessage->m_stream.LoadFromBinaryStream(m_pBinaryStream);
 
-        m_sentMessages.push_back(pMessage);
+        m_sentMessages.InsertAt(pMessage->m_sequence, pMessage);
         m_outgoingQueue.Push(pMessage);
+
+        return True;
     }
 
     Message* Channel::PopOutgoingMessage()
@@ -60,12 +68,12 @@ namespace Flux
 
     void Channel::PushIncomingMessage(Message* pMessage)
     {
-        m_incomingQueue.Push(pMessage);
+        m_incomingQueue.InsertAt(pMessage->m_sequence, pMessage);
     }
 
     void Channel::ProcessNotifications(INetNotificationHandler* pHandler)
     {
-        while (!m_incomingQueue.IsEmpty())
+        while (m_incomingQueue.IsFrontExist())
         {
             auto pMessage = m_incomingQueue.Front();
             if (pMessage)
@@ -84,13 +92,32 @@ namespace Flux
 
     void Channel::Update(std::chrono::system_clock::time_point const& currentTime)
     {
-        for (auto message : m_sentMessages)
+        for (uint32 index = 0; index < 1024; index++)
         {
-            auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - message->m_lastSentTime).count();
+            if (!m_sentMessages.IsPresent(index))
+            {
+                continue;
+            }
+            auto pMessage = m_sentMessages.FindAt(index);
+
+            auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - pMessage->m_lastSentTime).count();
             if (elapsed > FLUX_RESEND_DELAY_MS)
             {
-                message->m_lastSentTime = currentTime;
-                m_outgoingQueue.Push(message);
+                pMessage->m_lastSentTime = currentTime;
+                m_outgoingQueue.Push(pMessage);
+            }
+        }
+    }
+
+    void Channel::RemoveAckedSequence(uint16 sequence)
+    {
+        if (m_sentMessages.IsPresent(sequence))
+        {
+            auto pMessage = m_sentMessages.FindAt(sequence);
+            if (pMessage)
+            {
+                m_sentMessages.RemoveAt(sequence);
+                // Release pMessage
             }
         }
     }

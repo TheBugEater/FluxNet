@@ -8,6 +8,19 @@ namespace Flux
     class BinaryStream;
     class INetNotificationHandler;
 
+    struct ChannelData
+    {
+        uint16  Channel;
+        uint16  Count;
+        uint16  Sequences[FLUX_MAX_MSGS_PER_CHANNEL];
+    };
+
+    struct SentPacket
+    {
+        ChannelData             Channels[FLUX_MAX_CHANNELS];
+        uint32                  Count;
+    };
+
     class Peer
     {
     public:
@@ -15,9 +28,9 @@ namespace Flux
         virtual ~Peer();
 
         using PacketRecvQueue = CircularSequenceBuffer<Bool, FLUX_MAX_RECV_PACKETS, True>;
-        using PacketSendQueue = CircularSequenceBuffer<uint32, FLUX_MAX_SEND_PACKETS, True>;
+        using PacketSentQueue = CircularSequenceBuffer<SentPacket, FLUX_MAX_SEND_PACKETS, True>;
 
-        void                            Send(ISerializable* object);
+        Bool                            Send(ISerializable* object);
 
         void                            CreateOutgoingPacket(IStream* stream);
         void                            ProcessIncomingPacket(IStream* stream);
@@ -28,14 +41,14 @@ namespace Flux
         SocketAddressDescriptor const&  GetAddressDescriptor() const;
 
     private:
+        void                            ProcessReceivedAcks(uint16 sequence, uint32 ackBits);
         uint32                          GetLastAckedPackets() const;
         uint32                          GetNextSequence();
 
         Channel                         m_channel;
-        uint32                          m_recentAcks;
         uint16                          m_lastReceivedSequence;
 
-        PacketSendQueue                 m_sentQueue;
+        PacketSentQueue                 m_sentQueue;
         PacketRecvQueue                 m_recvQueue;
 
         uint16                          m_packetSequence;
