@@ -83,13 +83,18 @@ namespace Flux
         {
             Packet currentPacket;
             currentPacket.m_stream.LoadFromBinaryStream(m_pBinaryStream);
-            currentPacket.Serialize(stream);
 
             currentPacket.m_packetSequence = GetNextSequence();
             currentPacket.m_lastReceivedSequence = m_lastReceivedSequence;
             currentPacket.m_ackBits = GetLastAckedPackets();
+
             m_sentQueue.InsertAt(currentPacket.m_packetSequence, sentPacket);
+			
+			// Serialize at last, Otherwise we might miss information written to the packet later.
+            currentPacket.Serialize(stream);
+#ifdef DEBUG_RELIABLE_LAYER
             SocketLog("[%x] Packet Sequence %d",this, currentPacket.m_packetSequence);
+#endif
         }
     }
 
@@ -154,6 +159,10 @@ namespace Flux
         uint32 index = GetRoundIndex(FLUX_MAX_SEND_PACKETS, sequence - 32);
         for (uint32 bitIndex = 0; bitIndex <= 32; bitIndex++, index++)
         {
+            if (!(ackBits & (1 << bitIndex)))
+            {
+                continue;
+            }
             if (m_sentQueue.IsPresent(index) == True)
             {
                 auto const& sentPacket = m_sentQueue.FindAt(index);

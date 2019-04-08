@@ -44,7 +44,7 @@ namespace Flux
             return False;
         }
 
-        if (m_sendSequence > 256)
+        if (m_sendSequence > 255)
         {
             return False;
         }
